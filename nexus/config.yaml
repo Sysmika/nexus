@@ -1,0 +1,33 @@
+name: Nexus by Orion
+version: "1.0.0"
+slug: nexus_installer
+description: Instala la marca Nexus, el módulo de Soporte con tickets en Orion y el dashboard en este Home Assistant.
+url: https://orion.example/nexus
+arch:
+  - amd64
+  - aarch64
+startup: once
+boot: manual
+init: false
+hassio_api: true
+hassio_role: manager
+map:
+  - type: homeassistant_config
+    read_only: false
+    path: /config
+options:
+  codigo: ""
+  url_publica: ""
+  servidor: "https://smk.sysmika.org"
+  reiniciar: true
+  cliente_id: 0
+  api_key: ""
+  webhook_id: ""
+schema:
+  codigo: str?
+  url_publica: str?
+  servidor: str
+  reiniciar: bool
+  cliente_id: int?
+  api_key: password?
+  webhook_id: str?

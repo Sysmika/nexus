@@ -1,0 +1,18 @@
+{
+  "id": "/?nexus=1",
+  "name": "Nexus by Orion",
+  "short_name": "Nexus",
+  "description": "Tu casa inteligente, por Orion.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#1f4b7d",
+  "icons": [
+    { "src": "/local/nexus/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/local/nexus/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/local/nexus/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

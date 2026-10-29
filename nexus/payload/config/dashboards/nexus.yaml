@@ -1,0 +1,19 @@
+# Dashboard "Nexus" (modo YAML). Lo crea instalar-nexus.ps1; se puede ampliar a mano.
+title: Nexus
+views:
+- title: Inicio
+  path: inicio
+  icon: mdi:home
+  type: sections
+  max_columns: 2
+  theme: iOS Glass
+  sections:
+  - type: grid
+    cards:
+    - type: markdown
+      content: |-
+        <div style="text-align:center;padding:16px 8px;">
+        <img src="/local/nexus/logo.png" style="max-width:260px;width:80%;">
+        <p style="opacity:0.7;margin-top:12px;">Bienvenido a tu casa inteligente.<br>Desde la pestaña <b>Soporte</b> podés consultar al equipo técnico.</p>
+        </div>
+- !include views/soporte.yaml

@@ -1,0 +1,232 @@
+# =====================================================================
+#  MÓDULO ORION · SOPORTE TÉCNICO  (paquete autocontenido)
+#  Incluye: helpers del chat, rest_command, script, automations.
+#  La pestaña del dashboard está en dashboards/views/soporte.yaml.
+#
+#  Los datos de esta instalación (API Key, cliente_id y webhook_id) los
+#  completa Orion al descargar el paquete. Lo único manual:
+#    · pegar en secrets.yaml el bloque de secrets_para_pegar.yaml
+#    · poner la etiqueta "Orion vigilar" a los dispositivos a monitorear
+# =====================================================================
+
+input_boolean:
+  soporte_enviando:
+    name: "Soporte - enviando consulta"
+    icon: mdi:timer-sand
+    initial: false
+
+input_button:
+  reportar_problema:
+    name: "Reportar problema"
+    icon: mdi:message-alert
+
+input_text:
+  descripcion_problema:
+    name: "Descripción del problema"
+    max: 255
+    icon: mdi:text
+  soporte_chat_1:
+    name: "Soporte chat 1 (más reciente)"
+    max: 255
+  soporte_chat_2:
+    name: "Soporte chat 2"
+    max: 255
+  soporte_chat_3:
+    name: "Soporte chat 3"
+    max: 255
+  soporte_chat_4:
+    name: "Soporte chat 4"
+    max: 255
+  soporte_chat_5:
+    name: "Soporte chat 5"
+    max: 255
+  soporte_chat_6:
+    name: "Soporte chat 6"
+    max: 255
+  soporte_chat_7:
+    name: "Soporte chat 7"
+    max: 255
+  soporte_chat_8:
+    name: "Soporte chat 8"
+    max: 255
+  soporte_chat_9:
+    name: "Soporte chat 9"
+    max: 255
+  soporte_chat_10:
+    name: "Soporte chat 10 (más antiguo)"
+    max: 255
+
+rest_command:
+  orion_crear_ticket:
+    url: "https://smk.sysmika.org/api/tickets/notify.php"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      X-API-Key: !secret orion_tickets_api_key
+    payload: >-
+      {
+        "ticket_id": "HA-{{ now().timestamp() | int }}",
+        "cliente_id": CLIENTE_ID_AQUI,
+        "evento": "creado",
+        "asunto": {{ asunto | tojson }},
+        "descripcion": {{ descripcion | tojson }},
+        "prioridad": "{{ prioridad | default('media') }}",
+        "metadata": { "tipo": "tecnico", "origen": "home_assistant" },
+        "notificar_email": false
+      }
+    content_type: "application/json; charset=utf-8"
+
+script:
+  soporte_agregar_mensaje:
+    alias: Soporte - Agregar mensaje al historial
+    description: Guarda un mensaje nuevo (usuario o técnico) en el historial de chat
+      de soporte, corriendo los anteriores un lugar hacia atrás.
+    mode: queued
+    max: 10
+    fields:
+      quien:
+        description: '''usuario'' o ''tecnico'''
+        example: usuario
+      mensaje:
+        description: Texto del mensaje
+        example: No funciona la luz de la cocina
+    sequence:
+    - variables:
+        linea: "{{ ('\U0001F9D1 Vos' if quien == 'usuario' else '\U0001F6E0️ Técnico')
+          }} · {{ now().strftime('%d/%m %H:%M') }}: {{ mensaje }}"
+    - repeat:
+        count: 9
+        sequence:
+        - action: input_text.set_value
+          target:
+            entity_id: input_text.soporte_chat_{{ 11 - repeat.index }}
+          data:
+            value: '{{ states(''input_text.soporte_chat_'' ~ (10 - repeat.index)) }}'
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.soporte_chat_1
+      data:
+        value: '{{ linea }}'
+
+automation:
+  - id: 1bba4439201c4ff2a537e4fd92004e99
+    alias: Orion - Reportar sensor caído
+    description: Abre un ticket si algún dispositivo con la etiqueta "Orion vigilar" lleva 24 hs sin reportar.
+    mode: single
+    trigger:
+    - platform: template
+      value_template: "{{ label_entities('orion_vigilar') | select('is_state', 'unavailable') | list | count > 0 }}"
+      for:
+        hours: 24
+    action:
+    - variables:
+        caidos: "{{ label_entities('orion_vigilar') | select('is_state', 'unavailable') | list }}"
+    - service: rest_command.orion_crear_ticket
+      data:
+        asunto: "Dispositivos sin reportar: {{ caidos | join(', ') }}"
+        descripcion: "Llevan más de 24 hs sin reportar estado: {{ caidos | join(', ') }}. Revisar batería/conectividad."
+        prioridad: media
+  - alias: Orion - Reportar problema (botón dashboard)
+    trigger:
+    - platform: state
+      entity_id: input_button.reportar_problema
+    mode: single
+    max_exceeded: silent
+    action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.soporte_enviando
+    - wait_template: '{{ states(''input_text.descripcion_problema'') | trim != ''''
+        }}'
+      timeout: 00:00:08
+      continue_on_timeout: true
+    - if:
+      - condition: template
+        value_template: '{{ states(''input_text.descripcion_problema'') | trim == ''''
+          }}'
+      then:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.soporte_enviando
+      - service: persistent_notification.create
+        data:
+          title: ✏️ Falta la consulta
+          message: No se envió nada porque el campo estaba vacío. Escribí tu consulta,
+            presioná Enter y después tocá Enviar.
+          notification_id: orion_consulta_vacia
+      - stop: Consulta vacía
+    - variables:
+        consulta: '{{ states(''input_text.descripcion_problema'') | trim }}'
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: orion_consulta_vacia
+    - service: script.soporte_agregar_mensaje
+      data:
+        quien: usuario
+        mensaje: '{{ consulta }}'
+    - service: rest_command.orion_crear_ticket
+      continue_on_error: true
+      data:
+        asunto: Reporte manual desde Home Assistant
+        descripcion: '{{ consulta }}'
+        prioridad: media
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.descripcion_problema
+      data:
+        value: ''
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.soporte_enviando
+    - service: persistent_notification.create
+      data:
+        title: ✅ Consulta enviada
+        message: 'Enviaste: «{{ consulta }}». Te avisamos acá cuando responda el técnico.'
+        notification_id: orion_consulta_enviada
+    id: 1e812ef01d804a97ba672af69a8ab7b5
+  - alias: Orion - Recibir respuesta de soporte
+    trigger:
+    - platform: webhook
+      webhook_id: WEBHOOK_ID_AQUI
+      local_only: false
+    mode: queued
+    action:
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ trigger.json.evento | default('''') == ''eliminado'' }}'
+        sequence:
+        - repeat:
+            count: 10
+            sequence:
+            - service: input_text.set_value
+              target:
+                entity_id: input_text.soporte_chat_{{ repeat.index }}
+              data:
+                value: ''
+        - service: persistent_notification.dismiss
+          data:
+            notification_id: orion_consulta_enviada
+        - service: persistent_notification.create
+          data:
+            title: Soporte Nexus cerró la conversación
+            message: El ticket fue eliminado por el equipo de soporte. Si necesitás
+              algo más, enviá una nueva consulta.
+            notification_id: orion_ticket_eliminado
+      - conditions:
+        - condition: template
+          value_template: '{{ trigger.json.mensaje | default('''') | trim != '''' }}'
+        sequence:
+        - service: persistent_notification.dismiss
+          data:
+            notification_id: orion_ticket_eliminado
+        - service: script.soporte_agregar_mensaje
+          data:
+            quien: tecnico
+            mensaje: '{{ trigger.json.mensaje }}'
+        - service: persistent_notification.create
+          data:
+            title: Soporte Nexus respondió tu ticket
+            message: '{{ trigger.json.mensaje }}'
+            notification_id: orion_ticket_{{ trigger.json.ticket_id }}
+    id: faebf6c66876435f91199a305cd87ddf

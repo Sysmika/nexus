@@ -1,0 +1,105 @@
+# Vista "Soporte técnico" del módulo Orion (se incluye desde dashboards/orion.yaml).
+title: Soporte técnico
+path: soporte
+icon: mdi:lifebuoy
+type: sections
+max_columns: 2
+sections:
+- type: grid
+  cards:
+  - type: heading
+    heading: 🛠️ SOPORTE TÉCNICO NEXUS
+    heading_style: title
+    icon: mdi:lifebuoy
+    card_mod:
+      style: 'ha-card { background: none !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; --ha-heading-card-title-font-size: 22px; --ha-heading-card-title-font-weight: 700; --ha-heading-card-title-color: rgba(255,255,255,0.95); --ha-heading-card-subtitle-color: rgba(255,255,255,0.55); --primary-text-color: rgba(255,255,255,0.95); --secondary-text-color: rgba(255,255,255,0.55); }'
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: |-
+        ### 💬 HISTORIAL DE CONVERSACIÓN
+
+        Últimos mensajes intercambiados con el equipo técnico de Nexus by Orion
+      card_mod:
+        style: 'ha-card { background: rgba(44,44,48,0.45) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; border: 2px solid rgba(0,229,255,0.85) !important; border-radius: 2px 2px 0 0 !important; box-shadow: 0 0 10px rgba(0,229,255,0.45), inset 0 0 10px rgba(0,229,255,0.25) !important; color: rgba(255,255,255,0.92) !important; --primary-text-color: rgba(255,255,255,0.92); --secondary-text-color: rgba(255,255,255,0.6); --state-icon-color: rgba(255,255,255,0.85); } ha-markdown { color: rgba(255,255,255,0.85) !important; }'
+    - type: markdown
+      content: '{%- set ns = namespace(partes=[]) -%}{%- for i in range(1, 11) -%}{%- set v = states(''input_text.soporte_chat_'' ~ i) -%}{%- if v not in [''unknown'',''unavailable'',''''] -%}{%- set ns.partes = ns.partes + [v] -%}{%- endif -%}{%- endfor -%}{%- if ns.partes | length == 0 -%}<div style="text-align:center;opacity:0.6;padding:16px;"><em>Todavía no hay conversación. Escribí tu consulta abajo para empezar.</em></div>{%- else -%}{%- for m in ns.partes -%}{%- set es_usuario = m.startswith(''🧑'') -%}<div style="display:flex;justify-content:{{ ''flex-end'' if es_usuario else ''flex-start'' }};margin:6px 0;"><div style="max-width:88%;padding:8px 14px;border-radius:18px;font-size:0.9em;line-height:1.4;background:{{ ''#0a84ff'' if es_usuario else ''rgba(255,255,255,0.14)'' }};border:1px solid {{ ''transparent'' if es_usuario else ''transparent'' }};color:#fff;">{{ m }}</div></div>{%- endfor -%}{%- endif -%}'
+      entity_id:
+      - input_text.soporte_chat_1
+      - input_text.soporte_chat_2
+      - input_text.soporte_chat_3
+      - input_text.soporte_chat_4
+      - input_text.soporte_chat_5
+      - input_text.soporte_chat_6
+      - input_text.soporte_chat_7
+      - input_text.soporte_chat_8
+      - input_text.soporte_chat_9
+      - input_text.soporte_chat_10
+      card_mod:
+        style: 'ha-card { background: rgba(44,44,48,0.45) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; border: 2px solid rgba(0,229,255,0.85) !important; border-radius: 0 0 2px 2px !important; box-shadow: 0 0 10px rgba(0,229,255,0.45), inset 0 0 10px rgba(0,229,255,0.25) !important; color: rgba(255,255,255,0.92) !important; --primary-text-color: rgba(255,255,255,0.92); --secondary-text-color: rgba(255,255,255,0.6); --state-icon-color: rgba(255,255,255,0.85); } ha-markdown { color: rgba(255,255,255,0.85) !important; } ha-card { min-height: 160px !important; max-height: 420px !important; overflow-y: auto !important; padding: 16px !important; }'
+  - type: vertical-stack
+    cards:
+    - type: markdown
+      content: '### ✍️ ENVIAR NUEVA CONSULTA'
+      card_mod:
+        style: 'ha-card { background: rgba(44,44,48,0.45) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; border: 2px solid rgba(0,229,255,0.85) !important; border-radius: 2px 2px 0 0 !important; box-shadow: 0 0 10px rgba(0,229,255,0.45), inset 0 0 10px rgba(0,229,255,0.25) !important; color: rgba(255,255,255,0.92) !important; --primary-text-color: rgba(255,255,255,0.92); --secondary-text-color: rgba(255,255,255,0.6); --state-icon-color: rgba(255,255,255,0.85); } ha-markdown { color: rgba(255,255,255,0.85) !important; }'
+    - type: entities
+      entities:
+      - entity: input_text.descripcion_problema
+        name: ¿Qué problema tenés?
+        icon: mdi:pencil
+      card_mod:
+        style: 'ha-card { background: rgba(44,44,48,0.45) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; border: 2px solid rgba(0,229,255,0.85) !important; border-radius: 0 !important; box-shadow: 0 0 10px rgba(0,229,255,0.45), inset 0 0 10px rgba(0,229,255,0.25) !important; color: rgba(255,255,255,0.92) !important; --primary-text-color: rgba(255,255,255,0.92); --secondary-text-color: rgba(255,255,255,0.6); --state-icon-color: rgba(255,255,255,0.85); }'
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: input_boolean.soporte_enviando
+        state: 'off'
+      card:
+        type: button
+        entity: input_button.reportar_problema
+        name: 📤 ENVIAR CONSULTA AL SOPORTE
+        icon: mdi:send
+        icon_height: 40px
+        tap_action:
+          action: call-service
+          service: input_button.press
+          target:
+            entity_id: input_button.reportar_problema
+        card_mod:
+          style: 'ha-card { background: #0a84ff !important; border: none !important; border-radius: 0 0 2px 2px !important; box-shadow: none !important; --primary-text-color: #fff; --state-icon-color: #fff; color: #fff !important; }'
+    - type: conditional
+      conditions:
+      - condition: state
+        entity: input_boolean.soporte_enviando
+        state: 'on'
+      card:
+        type: button
+        name: ⏳ ENVIANDO CONSULTA…
+        icon: mdi:timer-sand
+        icon_height: 40px
+        tap_action:
+          action: none
+        card_mod:
+          style: 'ha-card { background: rgba(120,120,128,0.45) !important; border: none !important; border-radius: 0 0 2px 2px !important; box-shadow: none !important; --primary-text-color: rgba(255,255,255,0.8); --state-icon-color: rgba(255,255,255,0.8); }'
+        hold_action:
+          action: none
+  - type: markdown
+    content: |-
+      **ℹ️ Cómo funciona:**
+
+      1️⃣ Arriba vas a ver el historial completo (hasta 10 mensajes) de tu conversación con soporte
+
+      2️⃣ Escribí tu nueva consulta en el campo de texto
+
+      3️⃣ Presioná el botón "ENVIAR CONSULTA" para crear el ticket
+
+      ✅ Recibirás una notificación cuando el técnico responda, y aparecerá arriba en el historial
+    card_mod:
+      style: 'ha-card { background: rgba(44,44,48,0.45) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important; border: 2px solid rgba(0,229,255,0.85) !important; border-radius: 2px 2px 0 2px !important; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%) !important; box-shadow: 0 0 10px rgba(0,229,255,0.45), inset 0 0 10px rgba(0,229,255,0.25) !important; color: rgba(255,255,255,0.92) !important; --primary-text-color: rgba(255,255,255,0.92); --secondary-text-color: rgba(255,255,255,0.6); --state-icon-color: rgba(255,255,255,0.85); } ha-markdown { color: rgba(255,255,255,0.85) !important; } ha-card { position: relative; } ha-card::after { width: 18px; height: 18px; pointer-events: none; content: ""; position: absolute; right: -2px; bottom: -2px; background: linear-gradient(to bottom right, transparent calc(50% - 2px), rgba(0,229,255,0.85) calc(50% - 2px), rgba(0,229,255,0.85) 50%, transparent 50%); }'
+  - type: markdown
+    content: '**Nexus by Orion** funciona sobre Home Assistant, un proyecto de código abierto de la Open Home Foundation.'
+    card_mod:
+      style: 'ha-card { background: none !important; border: none !important; box-shadow: none !important; backdrop-filter: none !important; text-align: center; } ha-markdown { color: rgba(255,255,255,0.5) !important; font-size: 0.8em; }'
+  column_span: 3
+theme: iOS Glass

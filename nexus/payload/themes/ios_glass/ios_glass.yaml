@@ -1,0 +1,203 @@
+# Tema "iOS Glass" — se asigna por vista (Puente en Orion y Casa).
+# Neutraliza las reglas globales de card-mod del tema LCARS para que
+# los estilos propios de cada tarjeta (vidrio esmerilado) se apliquen.
+iOS Glass:
+  # card-mod: reemplaza las reglas LCARS heredadas por reglas vacías
+  card-mod-theme: "iOS Glass"
+  card-mod-row-yaml: |
+    .: |
+      :host {}
+  card-mod-more-info-yaml: |
+    .: |
+      :host {}
+  card-mod-dialog-yaml: |
+    .: |
+      :host {}
+
+  # Tipografía tipo iOS
+  primary-font-family: -apple-system, "SF Pro Display", "Segoe UI", Roboto, sans-serif
+  paper-font-common-base_-_font-family: var(--primary-font-family)
+  ha-font-family-body: var(--primary-font-family)
+  ha-font-family-heading: var(--primary-font-family)
+  font-family: var(--primary-font-family)
+
+  # Colores
+  primary-color: "#0a84ff"
+  accent-color: "#ff9f0a"
+  primary-text-color: "rgba(255,255,255,0.92)"
+  secondary-text-color: "rgba(255,255,255,0.6)"
+  text-primary-color: "#ffffff"
+  disabled-text-color: "rgba(255,255,255,0.35)"
+  divider-color: "rgba(255,255,255,0.08)"
+  state-icon-color: "rgba(255,255,255,0.85)"
+  state-active-color: "#ff9f0a"
+  paper-item-icon-color: "rgba(255,255,255,0.85)"
+
+  # Tarjetas: vidrio esmerilado
+  ha-card-background: "rgba(44,44,48,0.45)"
+  card-background-color: "rgba(44,44,48,0.45)"
+  ha-card-border-radius: 22px
+  ha-card-border-width: 1px
+  ha-card-border-color: "rgba(255,255,255,0.08)"
+  ha-card-box-shadow: none
+  ha-card-header-color: "rgba(255,255,255,0.95)"
+
+  # Barra lateral de Home Assistant: vidrio translucido, items con ochava y linea de neon a la izquierda
+  sidebar-background-color: "rgba(14,16,24,0.72)"
+  sidebar-menu-button-background-color: "rgba(14,16,24,0.0)"
+  sidebar-text-color: "rgba(255,255,255,0.88)"
+  sidebar-icon-color: "rgba(255,255,255,0.88)"
+  sidebar-selected-text-color: "#ffffff"
+  sidebar-selected-icon-color: "#ffffff"
+  sidebar-selected-background-color: "rgba(10,132,255,0.28)"
+  card-mod-sidebar: |
+    .tooltip {
+      background: rgba(14,16,24,0.55) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #ffffff !important;
+      opacity: 1 !important;
+      border: 1px solid rgba(0,229,255,0.55);
+      border-radius: 8px 8px 0 8px !important;
+      padding: 6px 10px !important;
+      box-shadow: 0 0 10px rgba(0,229,255,0.25);
+    }
+    :host {
+      border-right: 1px solid rgba(255,255,255,0.10) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    a, ha-md-list-item, paper-icon-item {
+      margin: 3px 8px !important;
+      border-radius: 8px 8px 0 8px !important;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+      border-left: 3px solid transparent;
+    }
+    /* Logo de Nexus en el menu: mascara con menu-icon.svg, toma el color del icono del menu
+       (--sidebar-icon-color), asi sirve para tema oscuro y claro sin cambiar archivos. */
+    #sidebar-panel-dashboard-nexus ha-icon {
+      display: block !important;
+      width: 30px !important;
+      height: 30px !important;
+      color: transparent !important;
+      background: var(--sidebar-icon-color, #ffffff) !important;
+      -webkit-mask: url('/local/nexus/menu-icon.svg?v=1') center / contain no-repeat !important;
+      mask: url('/local/nexus/menu-icon.svg?v=1') center / contain no-repeat !important;
+    }
+    #sidebar-panel-dashboard-nexus.selected ha-icon {
+      background: var(--sidebar-selected-icon-color, #ffffff) !important;
+    }
+    a.iron-selected, a[aria-selected="true"], .iron-selected, .selected {
+      background: rgba(10,132,255,0.28) !important;
+      border-left: 3px solid #00e5ff !important;
+      box-shadow: 0 0 10px rgba(0,229,255,0.35);
+    }
+
+  # Fondos para las pantallas que no son un dashboard (Configuración, Inicio, HACS, Music Assistant, etc.)
+  primary-background-color: "#0e0f16"
+  secondary-background-color: "#171923"
+  clear-background-color: "#0e0f16"
+  app-header-background-color: "rgba(14,16,24,0.92)"
+  app-header-text-color: "#ffffff"
+  app-header-selection-bar-color: "#00e5ff"
+  table-row-background-color: "rgba(255,255,255,0.03)"
+  table-row-alternative-background-color: "rgba(255,255,255,0.06)"
+  mdc-theme-surface: "#1c1d27"
+  mdc-theme-background: "#0e0f16"
+  mdc-theme-on-surface: "rgba(255,255,255,0.92)"
+  ha-dialog-surface-background: "#1c1d27"
+  dialog-box-shadow: "0 8px 32px rgba(0,0,0,0.6)"
+  input-fill-color: "rgba(255,255,255,0.14)"
+  input-ink-color: "#ffffff"
+  input-label-ink-color: "rgba(255,255,255,0.8)"
+  switch-checked-color: "#0a84ff"
+  lovelace-background: "linear-gradient(160deg, #0e0f16 0%, #17243a 55%, #1f4b7d 130%) fixed"
+
+  # Campos de texto, listas desplegables, globos y menus: fondo oscuro y letra clara
+  # (cubre los componentes clasicos "mdc", los Material 3 "md-sys" y los Web Awesome "wa" que usa el frontend nuevo)
+  card-background-color: "#1c1d27"
+  mdc-text-field-fill-color: "rgba(255,255,255,0.14)"
+  mdc-text-field-ink-color: "#ffffff"
+  mdc-text-field-label-ink-color: "rgba(255,255,255,0.8)"
+  mdc-text-field-idle-line-color: "rgba(255,255,255,0.35)"
+  mdc-text-field-hover-line-color: "rgba(255,255,255,0.6)"
+  mdc-text-field-outlined-idle-border-color: "rgba(255,255,255,0.35)"
+  mdc-text-field-outlined-hover-border-color: "rgba(255,255,255,0.6)"
+  mdc-text-field-disabled-ink-color: "rgba(255,255,255,0.4)"
+  mdc-select-fill-color: "rgba(255,255,255,0.14)"
+  mdc-select-ink-color: "#ffffff"
+  mdc-select-label-ink-color: "rgba(255,255,255,0.8)"
+  mdc-select-dropdown-icon-color: "rgba(255,255,255,0.7)"
+  mdc-select-idle-line-color: "rgba(255,255,255,0.35)"
+  mdc-select-hover-line-color: "rgba(255,255,255,0.6)"
+  mdc-select-disabled-ink-color: "rgba(255,255,255,0.4)"
+  mdc-theme-text-primary-on-background: "rgba(255,255,255,0.92)"
+  mdc-theme-text-secondary-on-background: "rgba(255,255,255,0.6)"
+  mdc-theme-surface: "#1c1d27"
+  mdc-menu-item-height: "48px"
+  paper-listbox-background-color: "#1c1d27"
+  paper-item-body-two-line-min-height: "48px"
+  md-sys-color-surface: "#1c1d27"
+  md-sys-color-surface-container: "#1c1d27"
+  md-sys-color-surface-container-low: "#171923"
+  md-sys-color-surface-container-high: "#232532"
+  md-sys-color-surface-container-highest: "#2a2c3a"
+  md-sys-color-on-surface: "#ffffff"
+  md-sys-color-on-surface-variant: "rgba(255,255,255,0.7)"
+  md-sys-color-outline: "rgba(255,255,255,0.4)"
+  md-sys-color-outline-variant: "rgba(255,255,255,0.2)"
+  wa-color-surface-default: "#171923"
+  wa-color-surface-raised: "#1c1d27"
+  wa-color-surface-lowered: "#0e0f16"
+  wa-color-text-normal: "#ffffff"
+  wa-color-text-quiet: "rgba(255,255,255,0.65)"
+  wa-form-control-background-color: "rgba(255,255,255,0.14)"
+  wa-form-control-value-color: "#ffffff"
+  wa-form-control-label-color: "rgba(255,255,255,0.8)"
+  wa-form-control-placeholder-color: "rgba(255,255,255,0.6)"
+  wa-form-control-border-color: "rgba(255,255,255,0.5)"
+  wa-tooltip-background-color: "rgba(14,16,24,0.75)"
+  wa-tooltip-content-color: "#ffffff"
+  wa-tooltip-border-color: "rgba(0,229,255,0.55)"
+  wa-tooltip-border-radius: "8px"
+  ha-tooltip-background-color: "rgba(14,16,24,0.75)"
+  ha-tooltip-text-color: "#ffffff"
+  tooltip-background-color: "rgba(14,16,24,0.75)"
+  tooltip-text-color: "#ffffff"
+
+  # Contraste extra en campos, areas de texto y editores de codigo (YAML)
+  input-disabled-ink-color: "rgba(255,255,255,0.5)"
+  input-disabled-fill-color: "rgba(255,255,255,0.06)"
+  input-idle-line-color: "rgba(255,255,255,0.5)"
+  input-hover-line-color: "rgba(255,255,255,0.8)"
+  input-dropdown-icon-color: "rgba(255,255,255,0.85)"
+  paper-input-container-input-color: "#ffffff"
+  paper-input-container-color: "rgba(255,255,255,0.8)"
+  paper-input-container-focus-color: "#0a84ff"
+  code-editor-background-color: "#12131c"
+  code-editor-gutter-color: "#1c1d27"
+  code-editor-linenumber-color: "rgba(255,255,255,0.55)"
+
+  # Paleta de tokens "ha-color-*" del frontend nuevo (viene en modo claro por defecto): se pasa a oscuro.
+  ha-color-text-primary: "rgba(255,255,255,0.95)"
+  ha-color-text-secondary: "rgba(255,255,255,0.72)"
+  ha-color-text-disabled: "rgba(255,255,255,0.4)"
+  ha-color-border-neutral-quiet: "rgba(255,255,255,0.15)"
+  ha-color-border-neutral-normal: "rgba(255,255,255,0.35)"
+  ha-color-border-neutral-loud: "rgba(255,255,255,0.6)"
+  ha-color-fill-neutral-quiet-resting: "rgba(255,255,255,0.10)"
+  ha-color-fill-neutral-quiet-hover: "rgba(255,255,255,0.16)"
+  ha-color-fill-neutral-quiet-active: "rgba(255,255,255,0.10)"
+  ha-color-fill-neutral-normal-resting: "rgba(255,255,255,0.14)"
+  ha-color-fill-neutral-normal-hover: "rgba(255,255,255,0.20)"
+  ha-color-fill-neutral-normal-active: "rgba(255,255,255,0.14)"
+  ha-color-on-neutral-quiet: "rgba(255,255,255,0.72)"
+  ha-color-on-neutral-normal: "rgba(255,255,255,0.88)"
+  ha-color-on-neutral-loud: "#ffffff"
+  ha-color-surface-default: "#1c1d27"
+  ha-color-surface-low: "#171923"
+  ha-color-surface-lower: "#0e0f16"
+  ha-color-on-surface-default: "#ffffff"
+  ha-color-form-background: "rgba(255,255,255,0.14)"
+  ha-color-form-background-hover: "rgba(255,255,255,0.20)"
+  ha-color-form-background-disabled: "rgba(255,255,255,0.06)"
