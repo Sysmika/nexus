@@ -66,6 +66,12 @@ def opciones():
 # ---------------------------------------------------------------- Orion
 def pedir_a_orion(o, webhook_id):
     """Canjea el código de instalación por los datos del cliente y registra el webhook."""
+    # El código de instalación son 12 letras/números (XXXX-XXXX-XXXX). Se valida antes de enviar
+    # nada: así, si alguien pega otra cosa (por ejemplo una API key), no sale de este equipo.
+    if len(re.sub(r"[^A-Za-z0-9]", "", o["codigo"])) != 12:
+        fallo("Lo que hay en 'codigo' no es un código de instalación (formato XXXX-XXXX-XXXX, 12 letras y números). "
+              "No se envió nada a Orion. Borrá ese campo y pegá el código que genera la llave del panel de Orion; "
+              "no pegues acá claves ni contraseñas.")
     url = o["servidor"].rstrip("/") + "/api/tickets/ha/instalar.php"
     cuerpo = {"codigo": o["codigo"].strip(), "webhook_id": webhook_id}
     if o.get("url_publica"):
