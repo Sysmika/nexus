@@ -15,12 +15,15 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import asyncio
 
 CONFIG = os.environ.get("NEXUS_CONFIG", "/config")
 PAYLOAD = os.environ.get("NEXUS_PAYLOAD", "/payload")
 OPTIONS = os.environ.get("NEXUS_OPTIONS", "/data/options.json")
 SUPERVISOR = os.environ.get("NEXUS_SUPERVISOR", "http://supervisor")
 TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
+AUTO = os.path.join(CONFIG, "nexus_instalar.json")
+ESTADO = os.path.join(CONFIG, ".nexus_estado.json")
 SELLO = time.strftime("%Y%m%d-%H%M%S")
 AVISOS = []
 
@@ -218,10 +221,108 @@ def supervisor(ruta, esperar=60):
         return json.loads(r.read().decode("utf-8") or "{}")
 
 
+
+# ---------------------------------------------------------------- accesos (etiqueta y usuarios)
+def esperar_core(maximo=420):
+    """Espera a que el core de HA vuelva a responder por la API del supervisor."""
+    time.sleep(40)  # deja pasar la caída por el reinicio
+    t0 = time.time()
+    while time.time() - t0 < maximo:
+        try:
+            req = urllib.request.Request(SUPERVISOR + "/core/api/config", headers={"Authorization": "Bearer " + TOKEN})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                if r.status == 200:
+                    return True
+        except Exception:
+            pass
+        time.sleep(5)
+    return False
+
+
+def ws_correr(comandos):
+    """Manda comandos al websocket de HA (token del supervisor). Cada item: callable(resultados)->dict|None."""
+    import websockets
+
+    async def _run():
+        async with websockets.connect("ws://supervisor/core/websocket", max_size=None) as ws:
+            await ws.recv()  # auth_required
+            await ws.send(json.dumps({"type": "auth", "access_token": TOKEN}))
+            if json.loads(await ws.recv()).get("type") != "auth_ok":
+                raise RuntimeError("el websocket de HA rechazó el token del supervisor")
+            n = [0]
+
+            async def cmd(c):
+                n[0] += 1
+                await ws.send(json.dumps(dict(c, id=n[0])))
+                while True:
+                    r = json.loads(await ws.recv())
+                    if r.get("id") == n[0]:
+                        return r
+            await comandos(cmd)
+    asyncio.run(_run())
+
+
+def crear_accesos(datos):
+    """Etiqueta 'Orion Vigilar' y usuarios (administrador y cliente sin permisos de admin)."""
+    titulo("7. Etiqueta y usuarios")
+    if not TOKEN:
+        info("Sin supervisor: omitido.")
+        return
+    if not esperar_core():
+        aviso("HA no volvió a responder a tiempo: etiqueta y usuarios sin crear.")
+        return
+
+    async def hacer(cmd):
+        r = await cmd({"type": "config/label_registry/list"})
+        if any(x.get("label_id") == "orion_vigilar" for x in r.get("result", [])):
+            info("Etiqueta 'Orion Vigilar' ya existía")
+        else:
+            r = await cmd({"type": "config/label_registry/create", "name": "Orion Vigilar"})
+            ok("Etiqueta 'Orion Vigilar'") if r.get("success") else aviso("No pude crear la etiqueta: %s" % r.get("error"))
+        quieren = []
+        if datos.get("admin"):
+            quieren.append((datos["admin"], ["system-admin"], "admin"))
+        if datos.get("cliente"):
+            quieren.append((datos["cliente"], ["system-users"], "cliente"))
+        if not quieren:
+            return
+        usuarios = (await cmd({"type": "config/auth/list"})).get("result", [])
+        for u, grupos, rol in quieren:
+            nombre_u, clave = (u.get("usuario") or "").strip(), u.get("clave") or ""
+            if not nombre_u or len(clave) < 8:
+                aviso("Usuario %s: falta usuario o la clave es corta (mín. 8): omitido." % rol)
+                continue
+            ya = next((x for x in usuarios if nombre_u in [c.get("username") for c in x.get("credentials", [])] or x.get("username") == nombre_u), None)
+            if ya:
+                r = await cmd({"type": "config/auth_provider/homeassistant/admin_change_password", "user_id": ya["id"], "password": clave})
+                ok("Usuario '%s' (%s): clave cambiada" % (nombre_u, rol)) if r.get("success") else aviso("No pude cambiar la clave de '%s': %s" % (nombre_u, r.get("error")))
+                continue
+            r = await cmd({"type": "config/auth/create", "name": u.get("nombre") or nombre_u, "group_ids": grupos})
+            if not r.get("success"):
+                aviso("No pude crear el usuario '%s': %s" % (nombre_u, r.get("error")))
+                continue
+            uid = r["result"]["user"]["id"]
+            r = await cmd({"type": "config/auth_provider/homeassistant/create", "user_id": uid, "username": nombre_u, "password": clave})
+            ok("Usuario '%s' (%s) creado" % (nombre_u, rol)) if r.get("success") else aviso("No pude ponerle clave a '%s': %s" % (nombre_u, r.get("error")))
+    try:
+        ws_correr(hacer)
+    except Exception as e:
+        aviso("Etiqueta y usuarios sin crear: %s" % e)
+
 # ---------------------------------------------------------------- principal
 def main():
     titulo("Nexus by Orion · instalador (add-on)")
     o = opciones()
+    datos = {}
+    if not (o.get("codigo") or "").strip() and os.path.exists(AUTO):
+        with open(AUTO, encoding="utf-8") as f:
+            datos = json.load(f)
+        o["codigo"] = datos.get("codigo", "")
+        o["url_publica"] = datos.get("url_publica", o.get("url_publica", ""))
+        info("Modo automático: datos tomados de nexus_instalar.json")
+    elif not (o.get("codigo") or "").strip() and not (o.get("api_key") or "").strip():
+        info("Nada para instalar (sin código ni nexus_instalar.json). Fin.")
+        return
 
     titulo("1. Datos de la instalación")
     webhook_id = (o.get("webhook_id") or "").strip()
@@ -309,6 +410,13 @@ def main():
         else:
             info("Reinicio omitido. Reiniciá HA a mano cuando quieras.")
 
+    if TOKEN and o.get("reiniciar", True):
+        crear_accesos(datos)
+    if datos and os.path.exists(AUTO):
+        os.remove(AUTO)  # tenía el código y las claves: no debe quedar en /config
+        ok("nexus_instalar.json borrado")
+    escribir(ESTADO, json.dumps({"instalado": SELLO, "cliente_id": cliente_id}))
+
     titulo("Listo")
     if AVISOS:
         print("  Revisá estos avisos:")
@@ -316,11 +424,10 @@ def main():
             print("   - " + a)
     print(
         "\n  Próximos pasos (en el Home Assistant):\n"
-        "   1. Ajustes > Áreas, etiquetas y zonas > Etiquetas: crear 'Orion vigilar' (id orion_vigilar)\n"
-        "      y asignarla a los dispositivos que deben abrir un ticket si caen 24 hs.\n"
-        "   2. Crear un usuario SIN permisos de administrador para el cliente.\n"
-        "   3. Abrir el dashboard Nexus > Soporte y mandar una consulta de prueba.\n"
-        "   4. Si el HA se publica detrás de un túnel o proxy: Ajustes > Sistema > Red > Servidor HTTP >\n"
+        "   1. Asignar la etiqueta 'Orion Vigilar' a los dispositivos que deben abrir un ticket si caen 24 hs.\n"
+        "      (Con nexus_instalar.json la etiqueta y los usuarios se crean solos; si no, hay que crearlos a mano.)\n"
+        "   2. Abrir el dashboard Nexus > Soporte y mandar una consulta de prueba.\n"
+        "   3. Si el HA se publica detrás de un túnel o proxy: Ajustes > Sistema > Red > Servidor HTTP >\n"
         "      'Confiar en X-Forwarded-For' y agregar el proxy de confianza (add-on Cloudflared: 172.30.33.0/24)."
     )
 
