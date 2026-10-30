@@ -67,6 +67,18 @@ def opciones():
 
 
 # ---------------------------------------------------------------- Orion
+def version_addon():
+    """Versión de este add-on según el supervisor (para que Orion la anote en la instalación)."""
+    if not TOKEN:
+        return ""
+    try:
+        req = urllib.request.Request(SUPERVISOR + "/addons/self/info", headers={"Authorization": "Bearer " + TOKEN})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return str(json.loads(r.read().decode("utf-8")).get("data", {}).get("version", ""))
+    except Exception:
+        return ""
+
+
 def pedir_a_orion(o, webhook_id):
     """Canjea el código de instalación por los datos del cliente y registra el webhook."""
     # El código de instalación son 12 letras/números (XXXX-XXXX-XXXX). Se valida antes de enviar
@@ -76,7 +88,7 @@ def pedir_a_orion(o, webhook_id):
               "No se envió nada a Orion. Borrá ese campo y pegá el código que genera la llave del panel de Orion; "
               "no pegues acá claves ni contraseñas.")
     url = o["servidor"].rstrip("/") + "/api/tickets/ha/instalar.php"
-    cuerpo = {"codigo": o["codigo"].strip(), "webhook_id": webhook_id}
+    cuerpo = {"codigo": o["codigo"].strip(), "webhook_id": webhook_id, "version": version_addon()}
     if o.get("url_publica"):
         cuerpo["url_publica"] = o["url_publica"].strip().rstrip("/")
     req = urllib.request.Request(
@@ -223,9 +235,9 @@ def supervisor(ruta, esperar=60):
 
 
 # ---------------------------------------------------------------- accesos (etiqueta y usuarios)
-def esperar_core(maximo=420):
+def esperar_core(maximo=420, pausa=40):
     """Espera a que el core de HA vuelva a responder por la API del supervisor."""
-    time.sleep(40)  # deja pasar la caída por el reinicio
+    time.sleep(pausa)  # deja pasar la caída por el reinicio
     t0 = time.time()
     while time.time() - t0 < maximo:
         try:
@@ -262,13 +274,13 @@ def ws_correr(comandos):
     asyncio.run(_run())
 
 
-def crear_accesos(datos):
+def crear_accesos(datos, pausa=40):
     """Etiqueta 'Orion Vigilar' y usuarios (administrador y cliente sin permisos de admin)."""
     titulo("7. Etiqueta y usuarios")
     if not TOKEN:
         info("Sin supervisor: omitido.")
         return
-    if not esperar_core():
+    if not esperar_core(pausa=pausa):
         aviso("HA no volvió a responder a tiempo: etiqueta y usuarios sin crear.")
         return
 
@@ -325,7 +337,7 @@ def main():
         info("Modo automático: datos tomados de nexus_instalar.json")
     if not (o.get("codigo") or "").strip() and os.path.exists(AUTO) and os.path.exists(ESTADO) and not datos.get("codigo"):
         info("Ya instalado: solo se crean etiqueta y usuarios")
-        crear_accesos(datos)
+        crear_accesos(datos, pausa=0)
         os.remove(AUTO)
         ok("nexus_instalar.json borrado")
         return
