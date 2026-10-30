@@ -273,8 +273,13 @@ def main():
     titulo("5. secrets.yaml")
     sec = os.path.join(CONFIG, "secrets.yaml")
     texto = leer(sec) if os.path.exists(sec) else ""
-    if re.search(r"(?m)^orion_tickets_api_key:", texto):
-        info("orion_tickets_api_key ya estaba (no se pisa)")
+    m = re.search(r"(?m)^orion_tickets_api_key:[ \t]*(.*)$", texto)
+    if m and m.group(1).strip().strip("\"'") == api_key:
+        info("orion_tickets_api_key ya estaba (igual)")
+    elif m:
+        texto = texto[:m.start()] + "orion_tickets_api_key: %s" % api_key + texto[m.end():]
+        escribir(sec, texto)
+        ok("orion_tickets_api_key actualizada")
     else:
         if texto and not texto.endswith("\n"):
             texto += "\n"
