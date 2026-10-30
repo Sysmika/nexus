@@ -293,6 +293,9 @@ def crear_accesos(datos):
                 aviso("Usuario %s: falta usuario o la clave es corta (mín. 8): omitido." % rol)
                 continue
             ya = next((x for x in usuarios if nombre_u in [c.get("username") for c in x.get("credentials", [])] or x.get("username") == nombre_u), None)
+            if ya and ya.get("is_owner"):
+                aviso("'%s' es el propietario de este HA: HA solo le deja cambiar la clave a él mismo. Usá otro nombre para el administrador." % nombre_u)
+                continue
             if ya:
                 r = await cmd({"type": "config/auth_provider/homeassistant/admin_change_password", "user_id": ya["id"], "password": clave})
                 ok("Usuario '%s' (%s): clave cambiada" % (nombre_u, rol)) if r.get("success") else aviso("No pude cambiar la clave de '%s': %s" % (nombre_u, r.get("error")))
@@ -320,7 +323,13 @@ def main():
         o["codigo"] = datos.get("codigo", "")
         o["url_publica"] = datos.get("url_publica", o.get("url_publica", ""))
         info("Modo automático: datos tomados de nexus_instalar.json")
-    elif not (o.get("codigo") or "").strip() and not (o.get("api_key") or "").strip():
+    if not (o.get("codigo") or "").strip() and os.path.exists(AUTO) and os.path.exists(ESTADO) and not datos.get("codigo"):
+        info("Ya instalado: solo se crean etiqueta y usuarios")
+        crear_accesos(datos)
+        os.remove(AUTO)
+        ok("nexus_instalar.json borrado")
+        return
+    if not (o.get("codigo") or "").strip() and not (o.get("api_key") or "").strip():
         info("Nada para instalar (sin código ni nexus_instalar.json). Fin.")
         return
 
