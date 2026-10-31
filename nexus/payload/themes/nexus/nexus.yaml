@@ -161,3 +161,7 @@ Nexus:
   ha-color-fill-warning-loud-resting: "#c2570a"
   ha-color-fill-warning-loud-hover: "#d9660f"
   ha-color-fill-warning-loud-active: "#a24808"
+
+  # Campos de texto (Añadir elemento, buscadores, formularios)
+  ha-color-form-background: "rgba(255,255,255,0.07)"
+  ha-color-form-background-hover: "rgba(255,255,255,0.11)"
