@@ -27,14 +27,15 @@ _LOGGER = logging.getLogger(__name__)
 RUTA_LOGIN = "/auth/authorize"
 MARCA = """
 <style>
-#nexus-login-brand{position:fixed;top:14px;left:0;right:0;display:flex;justify-content:center;
+#nexus-login-brand{position:fixed;top:calc(50% - 330px);left:0;right:0;display:flex;justify-content:center;
   pointer-events:none;z-index:5}
-#nexus-login-brand .nl-caja{background:#fff;border-radius:14px;padding:8px 18px;
-  box-shadow:0 2px 14px rgba(0,0,0,.35)}
+#nexus-login-brand .nl-caja{background:#fff;border-radius:14px;padding:8px 18px;box-sizing:border-box;
+  width:min(400px,92vw);display:flex;justify-content:center;box-shadow:0 2px 14px rgba(0,0,0,.35)}
 #nexus-login-brand img{display:block;height:92px;max-width:78vw;width:auto;object-fit:contain}
 #nexus-login-powered{position:fixed;bottom:10px;left:0;right:0;text-align:center;
   font:12px/1.3 Roboto,Arial,sans-serif;color:#fff;opacity:.7;pointer-events:none;z-index:5}
-@media (max-height:620px){#nexus-login-brand img{height:56px}}
+.header img[src*="favicon"]{display:none}
+@media (max-height:700px){#nexus-login-brand{top:10px}#nexus-login-brand img{height:56px}}
 </style>
 <div id="nexus-login-brand"><div class="nl-caja"><img src="/local/nexus/logo.png" alt="Nexus by Orion"></div></div>
 <div id="nexus-login-powered">Powered by Home Assistant</div>
