@@ -24,6 +24,7 @@ SUPERVISOR = os.environ.get("NEXUS_SUPERVISOR", "http://supervisor")
 TOKEN = os.environ.get("SUPERVISOR_TOKEN", "")
 AUTO = os.path.join(CONFIG, "nexus_instalar.json")
 ESTADO = os.path.join(CONFIG, ".nexus_estado.json")
+REMOTO = os.path.join(os.path.dirname(OPTIONS), "nexus_remoto.json")  # /data, privado del add-on
 SELLO = time.strftime("%Y%m%d-%H%M%S")
 AVISOS = []
 
@@ -352,6 +353,13 @@ def main():
             webhook_id = "orion_respuesta_" + secrets.token_hex(16)
         cliente_id, api_key, nombre = pedir_a_orion(o, webhook_id)
         ok("Código canjeado en Orion%s" % ((" (" + nombre + ")") if nombre else ""))
+        ts_cfg = datos.get("tailscale") or {}
+        if ts_cfg.get("activo"):
+            # remoto.py (corre después de este script) pide a Orion la clave de Tailscale con esta API key
+            escribir(REMOTO, json.dumps({"servidor": o["servidor"].rstrip("/"), "api_key": api_key,
+                                         "hostname": ts_cfg.get("hostname", "")}))
+            os.chmod(REMOTO, 0o600)
+            ok("Acceso remoto (Tailscale) programado")
         if not (o.get("url_publica") or "").strip():
             aviso("Sin url_publica: cargá la Webhook URL (…/api/webhook/%s) en Orion para recibir respuestas." % webhook_id)
     else:
