@@ -136,9 +136,14 @@ def main():
     os.makedirs(ESTADO_TS, exist_ok=True)
     os.makedirs(os.path.dirname(SOCKET), exist_ok=True)
     logf = open(LOG_TS, "a")
+    # Con /dev/net/tun (lo normal en HAOS) Tailscale crea su interfaz y el equipo queda alcanzable por
+    # su IP 100.x como cualquier otro. Sin tun, cae al modo userspace (que no reenvía bien los puertos
+    # del HA: se prefiere el modo normal).
+    tun = os.path.exists("/dev/net/tun")
+    info("Modo de red de Tailscale: %s" % ("interfaz tun" if tun else "userspace (sin /dev/net/tun)"))
     proc = subprocess.Popen(
-        ["tailscaled", "--tun=userspace-networking", "--state=" + os.path.join(ESTADO_TS, "tailscaled.state"),
-         "--socket=" + SOCKET],
+        ["tailscaled"] + ([] if tun else ["--tun=userspace-networking"])
+        + ["--state=" + os.path.join(ESTADO_TS, "tailscaled.state"), "--socket=" + SOCKET],
         stdout=logf, stderr=subprocess.STDOUT,
     )
 

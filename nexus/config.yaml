@@ -1,5 +1,5 @@
 name: Nexus by Orion
-version: "1.2.0"
+version: "1.2.1"
 slug: nexus_installer
 description: Instala la marca Nexus, el módulo de Soporte con tickets en Orion y el dashboard en este Home Assistant.
 url: https://orion.example/nexus
@@ -10,6 +10,11 @@ startup: application
 boot: auto
 init: false
 host_network: true
+privileged:
+  - NET_ADMIN
+  - NET_RAW
+devices:
+  - /dev/net/tun
 hassio_api: true
 homeassistant_api: true
 hassio_role: manager
