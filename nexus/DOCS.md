@@ -10,6 +10,12 @@ Convierte este Home Assistant en **Nexus by Orion**: marca, PWA, módulo de Sopo
 ## Sin Orion (pruebas)
 Dejá `codigo` vacío y completá `cliente_id`, `api_key` y `webhook_id`.
 
+## Pantalla de login con la marca Nexus
+El add-on instala el componente `nexus_login` (en `/config/custom_components`) y agrega la línea `nexus_login:` a `configuration.yaml` (con copia de seguridad). La página de inicio de sesión muestra el logo de Nexus by Orion y "Powered by Home Assistant", sin tocar el inicio de sesión en sí. Se instala al iniciar el add-on, también en equipos que ya estaban instalados, y **se activa en el próximo reinicio de Home Assistant**. Si algo falla, el login se ve como el original.
+
+## Token de Home Assistant para Orion
+Al instalar con un paquete de Orion, el add-on inicia sesión como el usuario administrador del paquete, crea un token de acceso de larga duración ("Orion (automático)") y se lo entrega a Orion, que lo guarda en la ficha de la instalación. Así Orion puede consultar este Home Assistant sin cargar el token a mano. No se muestra en el registro. Solo se hace en instalaciones nuevas o con paquete regenerado (necesita la contraseña que viene en el paquete).
+
 ## Acceso remoto (Tailscale)
 Si el paquete de Orion incluye **acceso remoto**, después de instalar el add-on le pide a Orion una clave de un solo uso (que vence en 1 hora) y conecta este equipo a la red privada de Orion (`tag:ha`). Orion anota el nodo solo. El add-on queda encendido para mantener esa conexión; el estado se conserva en sus datos y no hace falta volver a autorizar.
 

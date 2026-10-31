@@ -14,6 +14,7 @@ import shutil
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import asyncio
 
@@ -325,6 +326,118 @@ def crear_accesos(datos, pausa=40):
     except Exception as e:
         aviso("Etiqueta y usuarios sin crear: %s" % e)
 
+# ---------------------------------------------------------------- login con marca Nexus
+def asegurar_login():
+    """Instala (o repara) el componente que agrega el logo de Nexus a la pantalla de login y su línea
+    `nexus_login:` en configuration.yaml. Idempotente. No reinicia HA: se activa en el próximo reinicio.
+    Devuelve True si cambió algo."""
+    origen = os.path.join(PAYLOAD, "custom_components", "nexus_login")
+    cfg = os.path.join(CONFIG, "configuration.yaml")
+    if not os.path.isdir(origen) or not os.path.exists(cfg):
+        return False
+    cambio = False
+    destino = os.path.join(CONFIG, "custom_components", "nexus_login")
+    nuevos = {n: leer(os.path.join(origen, n)) for n in os.listdir(origen) if os.path.isfile(os.path.join(origen, n))}
+    for n, texto in nuevos.items():
+        ruta = os.path.join(destino, n)
+        if not os.path.exists(ruta) or leer(ruta) != texto:
+            escribir(ruta, texto)
+            cambio = True
+    texto_cfg = leer(cfg)
+    if not re.search(r"(?m)^nexus_login:", texto_cfg):
+        copia = cfg + ".bak-nexus-" + SELLO
+        if not os.path.exists(copia):
+            shutil.copy2(cfg, copia)
+        escribir(cfg, texto_cfg.rstrip("\n") + "\n\n# Marca Nexus en la pantalla de login (custom_components/nexus_login)\nnexus_login:\n")
+        cambio = True
+    return cambio
+
+
+# ---------------------------------------------------------------- token de Home Assistant para Orion
+def _http_json(url, cuerpo, formulario=False, timeout=20, crudo=False):
+    if formulario:
+        datos, tipo = urllib.parse.urlencode(cuerpo).encode("utf-8"), "application/x-www-form-urlencoded"
+    else:
+        datos, tipo = json.dumps(cuerpo).encode("utf-8"), "application/json"
+    req = urllib.request.Request(url, data=datos, method="POST", headers={"Content-Type": tipo})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        texto = r.read().decode("utf-8")
+    return texto if crudo else json.loads(texto or "{}")
+
+
+def token_largo(usuario, clave, nombre="Orion (automático)", dias=3650, base=None):
+    """Crea un token de acceso de larga duración para `usuario` iniciando sesión como él (el usuario del
+    Supervisor es de sistema y HA no le permite crear tokens de larga duración)."""
+    base = (base or os.environ.get("NEXUS_HA_URL", "http://127.0.0.1:8123")).rstrip("/")
+    cid = base + "/"
+    flujo = _http_json(base + "/auth/login_flow", {"client_id": cid, "handler": ["homeassistant", None],
+                                                    "redirect_uri": cid + "?auth_callback=1"})
+    paso = _http_json(base + "/auth/login_flow/" + flujo["flow_id"],
+                      {"username": usuario, "password": clave, "client_id": cid})
+    if paso.get("type") != "create_entry":
+        raise RuntimeError("Home Assistant no aceptó el inicio de sesión de '%s'" % usuario)
+    tok = _http_json(base + "/auth/token", {"grant_type": "authorization_code", "code": paso["result"],
+                                             "client_id": cid}, formulario=True)
+    acceso, refresco = tok["access_token"], tok.get("refresh_token")
+    try:
+        import websockets
+
+        async def _ws():
+            async with websockets.connect(base.replace("http", "ws", 1) + "/api/websocket", max_size=None) as ws:
+                await ws.recv()  # auth_required
+                await ws.send(json.dumps({"type": "auth", "access_token": acceso}))
+                if json.loads(await ws.recv()).get("type") != "auth_ok":
+                    raise RuntimeError("el websocket de HA rechazó el token")
+                await ws.send(json.dumps({"id": 1, "type": "auth/long_lived_access_token",
+                                          "client_name": nombre, "lifespan": dias}))
+                while True:
+                    m = json.loads(await ws.recv())
+                    if m.get("id") == 1:
+                        if not m.get("success"):
+                            raise RuntimeError("HA no creó el token: %s" % (m.get("error") or {}).get("message", "?"))
+                        return m["result"]
+        return asyncio.run(_ws())
+    finally:
+        if refresco:  # la sesión temporal con la que se pidió el token no debe quedar abierta
+            try:
+                _http_json(base + "/auth/revoke", {"token": refresco, "action": "revoke"}, formulario=True, crudo=True)
+            except Exception:  # noqa: BLE001
+                pass
+
+
+def entregar_token_a_orion(datos, servidor, api_key):
+    """Crea un token de larga duración del usuario administrador y se lo entrega a Orion (que lo guarda en
+    la ficha de la instalación) para que pueda consultar este Home Assistant sin cargar el token a mano."""
+    titulo("8. Token de Home Assistant para Orion")
+    adm = (datos or {}).get("admin") or {}
+    if not (adm.get("usuario") and adm.get("clave") and servidor and api_key):
+        info("El paquete no trae usuario administrador: no se crea el token.")
+        return
+    try:
+        token = token_largo(adm["usuario"], adm["clave"])
+    except Exception as e:  # noqa: BLE001
+        aviso("No pude crear el token para Orion: %s" % e)
+        return
+    req = urllib.request.Request(
+        servidor.rstrip("/") + "/api/tickets/ha/ha_token.php",
+        data=json.dumps({"token": token}).encode("utf-8"), method="POST",
+        headers={"Content-Type": "application/json", "X-API-Key": api_key, "User-Agent": "nexus-addon/1.3"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            resp = json.loads(r.read().decode("utf-8") or "{}")
+    except urllib.error.HTTPError as e:
+        aviso("Orion no aceptó el token (HTTP %s)." % e.code)
+        return
+    except Exception as e:  # noqa: BLE001
+        aviso("No pude entregar el token a Orion: %s" % e)
+        return
+    if resp.get("ok"):
+        ok("Token de larga duración de '%s' entregado a Orion" % adm["usuario"])
+    else:
+        aviso("Orion no guardó el token: %s" % resp.get("error", resp))
+
+
 # ---------------------------------------------------------------- principal
 def main():
     titulo("Nexus by Orion · instalador (add-on)")
@@ -343,7 +456,14 @@ def main():
         ok("nexus_instalar.json borrado")
         return
     if not (o.get("codigo") or "").strip() and not (o.get("api_key") or "").strip():
-        info("Nada para instalar (sin código ni nexus_instalar.json). Fin.")
+        info("Nada para instalar (sin código ni nexus_instalar.json).")
+        # Equipos ya instalados: el login con marca Nexus llega con las actualizaciones del add-on.
+        # Idempotente y silencioso; no reinicia HA (surte efecto en el próximo reinicio).
+        try:
+            if asegurar_login():
+                ok("Marca Nexus en la pantalla de login instalada (se activa en el próximo reinicio de Home Assistant)")
+        except Exception as e:  # noqa: BLE001
+            aviso("No pude instalar la marca del login: %s" % e)
         return
 
     titulo("1. Datos de la instalación")
@@ -382,6 +502,8 @@ def main():
     for src, dst in (("www/nexus", "www/nexus"), ("www/community", "www/community"), ("themes/ios_glass", "themes/ios_glass")):
         shutil.copytree(os.path.join(PAYLOAD, src), os.path.join(CONFIG, dst), dirs_exist_ok=True)
     ok("Marca Nexus, tarjetas (card-mod, button-card) y tema")
+    if asegurar_login():
+        ok("Marca Nexus en la pantalla de login (se activa al reiniciar Home Assistant)")
     paquete = leer(os.path.join(PAYLOAD, "config/packages/orion_soporte.yaml"))
     paquete = paquete.replace("CLIENTE_ID_AQUI", str(cliente_id)).replace("WEBHOOK_ID_AQUI", webhook_id)
     for ph in ("CLIENTE_ID_AQUI", "WEBHOOK_ID_AQUI", "API_KEY_AQUI"):
@@ -441,6 +563,7 @@ def main():
 
     if TOKEN and o.get("reiniciar", True):
         crear_accesos(datos)
+        entregar_token_a_orion(datos, o.get("servidor", ""), api_key)
     if datos and os.path.exists(AUTO):
         os.remove(AUTO)  # tenía el código y las claves: no debe quedar en /config
         ok("nexus_instalar.json borrado")

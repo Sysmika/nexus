@@ -1,0 +1,10 @@
+{
+  "domain": "nexus_login",
+  "name": "Nexus by Orion - Login",
+  "version": "1.0.0",
+  "documentation": "https://github.com/Sysmika/nexus",
+  "dependencies": ["http"],
+  "codeowners": [],
+  "requirements": [],
+  "iot_class": "calculated"
+}
