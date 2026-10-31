@@ -13,6 +13,9 @@ Dejá `codigo` vacío y completá `cliente_id`, `api_key` y `webhook_id`.
 ## Pantalla de login con la marca Nexus
 El add-on instala el componente `nexus_login` (en `/config/custom_components`) y agrega la línea `nexus_login:` a `configuration.yaml` (con copia de seguridad). La página de inicio de sesión muestra el logo de Nexus by Orion y "Powered by Home Assistant", sin tocar el inicio de sesión en sí. Se instala al iniciar el add-on, también en equipos que ya estaban instalados, y **se activa en el próximo reinicio de Home Assistant**. Si algo falla, el login se ve como el original.
 
+## Tema Nexus (pantallas internas)
+El add-on instala el tema **Nexus**: azul marino de la marca para Configuración y el resto de las pantallas internas, con el logo como marca de agua. Se deja como tema por defecto una sola vez; después cada usuario puede elegir otro en su perfil (Perfil > Tema). El dashboard Nexus no se toca. Los cambios de logo y tema llegan con cada actualización del add-on y se activan en el próximo reinicio de Home Assistant.
+
 ## Token de Home Assistant para Orion
 Al instalar con un paquete de Orion, el add-on inicia sesión como el usuario administrador del paquete, crea un token de acceso de larga duración ("Orion (automático)") y se lo entrega a Orion, que lo guarda en la ficha de la instalación. Así Orion puede consultar este Home Assistant sin cargar el token a mano. No se muestra en el registro. Solo se hace en instalaciones nuevas o con paquete regenerado (necesita la contraseña que viene en el paquete).
 

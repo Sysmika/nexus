@@ -101,10 +101,27 @@
     });
   };
 
+  // --- marca de agua (solo con el tema "Nexus": su variable nexus-marca-agua vale 1) ---
+  const arreglarMarcaAgua = () => {
+    const activa = getComputedStyle(document.documentElement).getPropertyValue('--nexus-marca-agua').trim().replace(/"/g, '') === '1';
+    let e = document.getElementById('nexus-marca-agua');
+    if (!activa) {
+      if (e) e.remove();
+      return;
+    }
+    if (e) return;
+    e = document.createElement('div');
+    e.id = 'nexus-marca-agua';
+    e.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:2147483000;opacity:.10;'
+      + 'background:url(' + BASE + 'marca-agua.png) center / min(62vw,900px) no-repeat';
+    document.body.appendChild(e);
+  };
+
   const ciclo = () => {
     try {
       arreglarIconos();
       arreglarSidebar();
+      arreglarMarcaAgua();
     } catch (e) {
       console.warn('[nexus-branding]', e);
     }

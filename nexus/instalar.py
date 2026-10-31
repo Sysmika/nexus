@@ -6,6 +6,7 @@ copia la marca/tema/tarjetas, genera el paquete de Soporte con los datos del cli
 parchea configuration.yaml solo en lo que falta y (si hay supervisor) verifica y reinicia.
 Se puede correr varias veces: no duplica nada.
 """
+import hashlib
 import json
 import os
 import re
@@ -353,6 +354,72 @@ def asegurar_login():
     return cambio
 
 
+# ---------------------------------------------------------------- tema Nexus (pantallas internas)
+TEMA_APLICADO = os.path.join(os.path.dirname(OPTIONS), "nexus_tema_aplicado")  # /data, privado del add-on
+
+
+def _copiar_si_cambia(origen, destino):
+    """Copia el archivo solo si no existe o difiere (bytes). Devuelve True si copió."""
+    with open(origen, "rb") as f:
+        nuevo = f.read()
+    if os.path.exists(destino):
+        with open(destino, "rb") as f:
+            if f.read() == nuevo:
+                return False
+    os.makedirs(os.path.dirname(destino), exist_ok=True)
+    with open(destino, "wb") as f:
+        f.write(nuevo)
+    return True
+
+
+def asegurar_marca():
+    """Mantiene al día la marca visual: logo y recursos de www/nexus, tema "Nexus" (azul marino con el logo
+    como marca de agua) y la versión del script de marca en configuration.yaml (para saltear la caché).
+    No toca el dashboard del cliente. Idempotente. Devuelve True si cambió algo."""
+    cambio = False
+    for src in ("www/nexus", "themes/nexus"):
+        raiz = os.path.join(PAYLOAD, src)
+        if not os.path.isdir(raiz):
+            continue
+        for carpeta, _, archivos in os.walk(raiz):
+            for n in archivos:
+                origen = os.path.join(carpeta, n)
+                rel = os.path.relpath(origen, os.path.join(PAYLOAD, os.path.dirname(src)))
+                if _copiar_si_cambia(origen, os.path.join(CONFIG, os.path.dirname(src), rel)):
+                    cambio = True
+    cfg = os.path.join(CONFIG, "configuration.yaml")
+    js = os.path.join(PAYLOAD, "www/nexus/nexus-branding.js")
+    if cambio and os.path.exists(cfg) and os.path.exists(js):
+        with open(js, "rb") as f:
+            ver = hashlib.sha1(f.read()).hexdigest()[:8]
+        texto = leer(cfg)
+        nuevo = re.sub(r"(nexus-branding\.js\?v=)[0-9A-Za-z]+", r"\g<1>" + ver, texto)
+        if nuevo != texto:
+            copia = cfg + ".bak-nexus-" + SELLO
+            if not os.path.exists(copia):
+                shutil.copy2(cfg, copia)
+            escribir(cfg, nuevo)
+    return cambio
+
+
+def tema_por_defecto():
+    """Deja "Nexus" como tema por defecto de Home Assistant, una sola vez (después cada usuario puede elegir
+    otro en su perfil). Necesita que el core esté arriba; si falla, reintenta en el próximo inicio."""
+    if os.path.exists(TEMA_APLICADO) or not TOKEN:
+        return False
+    if not os.path.exists(os.path.join(CONFIG, "themes", "nexus", "nexus.yaml")):
+        return False
+    base = SUPERVISOR + "/core/api/services/frontend/"
+    for servicio, cuerpo in (("reload_themes", {}), ("set_theme", {"name": "Nexus"})):
+        req = urllib.request.Request(
+            base + servicio, data=json.dumps(cuerpo).encode("utf-8"), method="POST",
+            headers={"Authorization": "Bearer " + TOKEN, "Content-Type": "application/json"},
+        )
+        urllib.request.urlopen(req, timeout=30).read()
+    escribir(TEMA_APLICADO, "ok\n")
+    return True
+
+
 # ---------------------------------------------------------------- token de Home Assistant para Orion
 def _http_json(url, cuerpo, formulario=False, timeout=20, crudo=False):
     if formulario:
@@ -464,6 +531,16 @@ def main():
                 ok("Marca Nexus en la pantalla de login instalada (se activa en el próximo reinicio de Home Assistant)")
         except Exception as e:  # noqa: BLE001
             aviso("No pude instalar la marca del login: %s" % e)
+        try:
+            if asegurar_marca():
+                ok("Logo y tema Nexus actualizados (se activan en el próximo reinicio de Home Assistant)")
+        except Exception as e:  # noqa: BLE001
+            aviso("No pude actualizar el tema Nexus: %s" % e)
+        try:
+            if tema_por_defecto():
+                ok("Tema Nexus puesto por defecto")
+        except Exception as e:  # noqa: BLE001
+            info("Tema por defecto pendiente (se reintenta en el próximo inicio): %s" % e)
         return
 
     titulo("1. Datos de la instalación")
@@ -499,9 +576,14 @@ def main():
         fallo("No encuentro configuration.yaml en %s" % CONFIG)
 
     titulo("3. Archivos")
-    for src, dst in (("www/nexus", "www/nexus"), ("www/community", "www/community"), ("themes/ios_glass", "themes/ios_glass")):
+    for src, dst in (("www/nexus", "www/nexus"), ("www/community", "www/community"), ("themes/ios_glass", "themes/ios_glass"), ("themes/nexus", "themes/nexus")):
         shutil.copytree(os.path.join(PAYLOAD, src), os.path.join(CONFIG, dst), dirs_exist_ok=True)
-    ok("Marca Nexus, tarjetas (card-mod, button-card) y tema")
+    ok("Marca Nexus, tarjetas (card-mod, button-card) y temas")
+    try:
+        if tema_por_defecto():
+            ok("Tema Nexus puesto por defecto")
+    except Exception as e:  # noqa: BLE001
+        info("Tema por defecto pendiente (se reintenta en el próximo inicio): %s" % e)
     if asegurar_login():
         ok("Marca Nexus en la pantalla de login (se activa al reiniciar Home Assistant)")
     paquete = leer(os.path.join(PAYLOAD, "config/packages/orion_soporte.yaml"))

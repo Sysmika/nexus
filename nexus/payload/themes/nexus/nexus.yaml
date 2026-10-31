@@ -1,0 +1,59 @@
+# Tema "Nexus" — azul marino de la marca para Configuración y el resto de las pantallas internas.
+# La marca de agua (logo) la dibuja /local/nexus/nexus-branding.js cuando este tema está activo
+# (lo avisa la variable nexus-marca-agua). El dashboard Nexus sigue usando su propio tema.
+Nexus:
+  nexus-marca-agua: "1"
+
+  # Fondos
+  primary-background-color: "#0b1d33"
+  secondary-background-color: "#0f2744"
+  card-background-color: "#12294a"
+  ha-card-background: "#12294a"
+  ha-card-border-radius: 14px
+  ha-card-border-width: 1px
+  ha-card-border-color: "rgba(120,170,230,0.14)"
+  ha-card-box-shadow: none
+
+  # Marca
+  primary-color: "#4f9be0"
+  light-primary-color: "#7db6ee"
+  dark-primary-color: "#1f4b7d"
+  accent-color: "#6cc6ff"
+
+  # Texto
+  primary-text-color: "rgba(255,255,255,0.92)"
+  secondary-text-color: "rgba(200,220,245,0.68)"
+  text-primary-color: "#ffffff"
+  disabled-text-color: "rgba(200,220,245,0.35)"
+  divider-color: "rgba(120,170,230,0.16)"
+
+  # Íconos y estados
+  state-icon-color: "#8fc2f5"
+  state-active-color: "#6cc6ff"
+  paper-item-icon-color: "#8fc2f5"
+  paper-item-icon-active-color: "#6cc6ff"
+
+  # Encabezado de cada pantalla
+  app-header-background-color: "#0f2744"
+  app-header-text-color: "#ffffff"
+  app-header-border-bottom: "1px solid rgba(120,170,230,0.16)"
+
+  # Barra lateral
+  sidebar-background-color: "#081628"
+  sidebar-menu-button-background-color: "#081628"
+  sidebar-text-color: "rgba(255,255,255,0.86)"
+  sidebar-icon-color: "rgba(160,200,245,0.9)"
+  sidebar-selected-text-color: "#ffffff"
+  sidebar-selected-icon-color: "#ffffff"
+  sidebar-selected-background-color: "rgba(31,75,125,0.75)"
+
+  # Controles
+  switch-checked-color: "#4f9be0"
+  switch-checked-button-color: "#ffffff"
+  switch-checked-track-color: "#1f4b7d"
+  slider-color: "#4f9be0"
+  slider-bar-color: "rgba(120,170,230,0.28)"
+  mdc-theme-primary: "#4f9be0"
+  table-row-background-color: "rgba(255,255,255,0.00)"
+  table-row-alternative-background-color: "rgba(255,255,255,0.03)"
+  code-editor-background-color: "#0a1a2e"
