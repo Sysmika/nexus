@@ -1,0 +1,65 @@
+# =====================================================================
+#  ORION · ALERTAS POR EMAIL DE DISPOSITIVOS CAÍDOS  (paquete autocontenido)
+#
+#  Cada 5 minutos revisa los dispositivos con la etiqueta "Orion vigilar" y le manda a Orion la lista
+#  de los que llevan más de 15 minutos sin responder (estado "unavailable"). Orion es quien lleva el
+#  estado y manda el email: uno cuando cae y otro cuando se recupera, sin repetirlo mientras siga caído.
+#  Llega al email de la ficha del cliente y a los administradores de Orion.
+#
+#  No hay nada que configurar acá: usa la misma API key de Soporte (secrets.yaml: orion_tickets_api_key)
+#  y se identifica sola. Lo único manual es ponerle la etiqueta "Orion vigilar" a los dispositivos
+#  que importan (Ajustes > Etiquetas, o desde la ficha del dispositivo / entidad).
+# =====================================================================
+
+input_boolean:
+  orion_alertas_activas:
+    name: "Orion - hay dispositivos caídos informados"
+    icon: mdi:bell-alert-outline
+    initial: false
+
+rest_command:
+  orion_alerta:
+    url: "https://smk.sysmika.org/api/tickets/ha/alerta.php"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      X-API-Key: !secret orion_tickets_api_key
+    payload: '{"caidos": {{ caidos | tojson }}}'
+    content_type: "application/json; charset=utf-8"
+    timeout: 20
+
+automation:
+  - id: nexus_alerta_dispositivos_caidos
+    alias: Orion - Avisar por email dispositivos caídos
+    description: >-
+      Informa a Orion los dispositivos con la etiqueta "Orion vigilar" que llevan más de 15 minutos sin
+      responder; Orion manda el email de caída y el de recuperación.
+    mode: single
+    triggers:
+      - trigger: time_pattern
+        minutes: "/5"
+    actions:
+      - variables:
+          caidos: >-
+            {% set limite = now() - timedelta(minutes=15) %}
+            {% set ns = namespace(lista=[]) %}
+            {% for s in expand(label_entities('orion_vigilar')) if s.state == 'unavailable' and s.last_changed < limite %}
+              {% set ns.lista = ns.lista + [{'entity_id': s.entity_id, 'nombre': s.name, 'desde': s.last_changed.isoformat()}] %}
+            {% endfor %}
+            {{ ns.lista }}
+      # Solo se llama a Orion si hay caídos, o si antes se informaron y hay que avisar que ya no (recuperación)
+      - condition: template
+        value_template: "{{ caidos | count > 0 or is_state('input_boolean.orion_alertas_activas', 'on') }}"
+      - action: rest_command.orion_alerta
+        data:
+          caidos: "{{ caidos }}"
+        response_variable: respuesta
+        continue_on_error: true
+      # Solo si Orion respondió bien se actualiza la marca; si no, se reintenta en 5 minutos
+      - if:
+          - condition: template
+            value_template: "{{ respuesta is defined and respuesta.status | default(0) == 200 }}"
+        then:
+          - action: "input_boolean.turn_{{ 'on' if caidos | count > 0 else 'off' }}"
+            target:
+              entity_id: input_boolean.orion_alertas_activas

@@ -420,6 +420,16 @@ def tema_por_defecto():
     return True
 
 
+def asegurar_alertas():
+    """Alertas por email de dispositivos caídos (packages/orion_alertas.yaml). En equipos ya instalados
+    llega con la actualización del add-on; solo se instala si el equipo ya tiene el paquete de Soporte
+    (de ahí salen la API key y el include de packages). Idempotente. Devuelve True si cambió algo."""
+    if not os.path.exists(os.path.join(CONFIG, "packages", "orion_soporte.yaml")):
+        return False
+    return _copiar_si_cambia(os.path.join(PAYLOAD, "config/packages/orion_alertas.yaml"),
+                             os.path.join(CONFIG, "packages", "orion_alertas.yaml"))
+
+
 # ---------------------------------------------------------------- token de Home Assistant para Orion
 def _http_json(url, cuerpo, formulario=False, timeout=20, crudo=False):
     if formulario:
@@ -541,6 +551,11 @@ def main():
                 ok("Tema Nexus puesto por defecto")
         except Exception as e:  # noqa: BLE001
             info("Tema por defecto pendiente (se reintenta en el próximo inicio): %s" % e)
+        try:
+            if asegurar_alertas():
+                ok("Alertas por email de dispositivos caídos instaladas (se activan en el próximo reinicio de Home Assistant)")
+        except Exception as e:  # noqa: BLE001
+            aviso("No pude instalar las alertas por email: %s" % e)
         return
 
     titulo("1. Datos de la instalación")
@@ -594,7 +609,9 @@ def main():
     escribir(os.path.join(CONFIG, "packages/orion_soporte.yaml"), paquete)
     escribir(os.path.join(CONFIG, "dashboards/views/soporte.yaml"), leer(os.path.join(PAYLOAD, "config/dashboards/views/soporte.yaml")))
     ok("Paquete de Soporte y vista de Soporte")
-    dash = os.path.join(CONFIG, "dashboards/nexus.yaml")
+    if asegurar_alertas():
+        ok("Paquete de alertas por email de dispositivos caídos")
+    dash =os.path.join(CONFIG, "dashboards/nexus.yaml")
     if os.path.exists(dash):
         info("dashboards/nexus.yaml ya existe: se respeta")
     else:

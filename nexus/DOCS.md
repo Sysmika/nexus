@@ -16,6 +16,9 @@ El add-on instala el componente `nexus_login` (en `/config/custom_components`) y
 ## Tema Nexus (pantallas internas)
 El add-on instala el tema **Nexus**: azul marino de la marca para Configuración y el resto de las pantallas internas, con el logo como marca de agua. Se deja como tema por defecto una sola vez; después cada usuario puede elegir otro en su perfil (Perfil > Tema). El dashboard Nexus no se toca. Los cambios de logo y tema llegan con cada actualización del add-on y se activan en el próximo reinicio de Home Assistant.
 
+## Alertas por email de dispositivos caídos
+El add-on instala el paquete `packages/orion_alertas.yaml`. Cada 5 minutos revisa los dispositivos con la etiqueta **Orion vigilar** y le informa a Orion los que llevan más de 15 minutos en estado `unavailable`. Orion lleva el estado y manda un email cuando un dispositivo cae y otro cuando se recupera (no repite mientras siga caído). Llega al email de la ficha del cliente y a los administradores de Orion. Usa la misma API key que Soporte: no hay nada que configurar, solo etiquetar los dispositivos. Se instala también en equipos que ya estaban instalados (si tienen el paquete de Soporte) y **se activa en el próximo reinicio de Home Assistant**. Además de este aviso, sigue vigente el ticket automático a las 24 hs sin reportar.
+
 ## Token de Home Assistant para Orion
 Al instalar con un paquete de Orion, el add-on inicia sesión como el usuario administrador del paquete, crea un token de acceso de larga duración ("Orion (automático)") y se lo entrega a Orion, que lo guarda en la ficha de la instalación. Así Orion puede consultar este Home Assistant sin cargar el token a mano. No se muestra en el registro. Solo se hace en instalaciones nuevas o con paquete regenerado (necesita la contraseña que viene en el paquete).
 
