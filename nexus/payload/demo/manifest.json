@@ -1,0 +1,539 @@
+{
+  "rubros": {
+    "hogar": {
+      "dashboard": {
+        "url_path": "dashboard-hogar",
+        "titulo": "Hogar",
+        "icono": "mdi:home",
+        "archivo": "dashboards/hogar.yaml"
+      },
+      "vigilar": [
+        "sensor.hogar_temperatura_dormitorio",
+        "sensor.hogar_temperatura_living",
+        "binary_sensor.hogar_puerta_principal"
+      ],
+      "ocultar": [
+        "input_boolean.demo_hogar_cerradura",
+        "input_boolean.demo_hogar_inicializado",
+        "switch.hogar_aa_living_compresor"
+      ],
+      "historial": [
+        {
+          "entity_id": "sensor.hogar_temperatura_living",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 23.5,
+          "amp": 2.0,
+          "pico": 16,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_humedad_living",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 52,
+          "amp": -7,
+          "pico": 16,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_temperatura_dormitorio",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 22.0,
+          "amp": 2.0,
+          "pico": 17,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_humedad_dormitorio",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 55,
+          "amp": -6,
+          "pico": 17,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_temperatura_cocina",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 24.5,
+          "amp": 2.5,
+          "pico": 14,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_temperatura_exterior",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 20,
+          "amp": 7,
+          "pico": 15,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_humedad_exterior",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 62,
+          "amp": -18,
+          "pico": 15,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_presion",
+          "unidad": "hPa",
+          "suma": false,
+          "tipo": "onda",
+          "base": 1014,
+          "amp": 3,
+          "pico": 10,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_co2_living",
+          "unidad": "ppm",
+          "suma": false,
+          "tipo": "onda",
+          "base": 640,
+          "amp": 190,
+          "pico": 21,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_particulas_pm2_5",
+          "unidad": "µg/m³",
+          "suma": false,
+          "tipo": "onda",
+          "base": 9,
+          "amp": 4,
+          "pico": 19,
+          "dec": 0,
+          "minimo": 1
+        },
+        {
+          "entity_id": "sensor.hogar_luminosidad_living",
+          "unidad": "lx",
+          "suma": false,
+          "tipo": "onda",
+          "base": 330,
+          "amp": 340,
+          "pico": 13,
+          "dec": 0,
+          "minimo": 0
+        },
+        {
+          "entity_id": "sensor.hogar_consumo_electrico",
+          "unidad": "W",
+          "suma": false,
+          "tipo": "onda",
+          "base": 470,
+          "amp": 240,
+          "pico": 20,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.hogar_energia_hoy",
+          "unidad": "kWh",
+          "suma": true,
+          "tipo": "acumulado",
+          "p0": 380,
+          "amp": 240,
+          "pico": 20,
+          "factor": 0.001
+        }
+      ]
+    },
+    "oficina": {
+      "dashboard": {
+        "url_path": "dashboard-oficina",
+        "titulo": "Oficina",
+        "icono": "mdi:office-building",
+        "archivo": "dashboards/oficina.yaml"
+      },
+      "vigilar": [
+        "sensor.oficina_temperatura_sala_de_servidores",
+        "sensor.oficina_servidor_cpu",
+        "binary_sensor.oficina_internet_conectado"
+      ],
+      "ocultar": [
+        "input_boolean.demo_oficina_cerradura_ingreso",
+        "input_boolean.demo_oficina_cerradura_srv",
+        "input_boolean.demo_oficina_inicializado",
+        "switch.oficina_aa_open_space_compresor",
+        "switch.oficina_aa_sala_de_servidores_compresor"
+      ],
+      "historial": [
+        {
+          "entity_id": "sensor.oficina_temperatura_sala_de_servidores",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 24.0,
+          "amp": 1.4,
+          "pico": 15,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_humedad_sala_de_servidores",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 42,
+          "amp": -4,
+          "pico": 15,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_temperatura_open_space",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 23.5,
+          "amp": 2.2,
+          "pico": 15,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_humedad_open_space",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 48,
+          "amp": -6,
+          "pico": 15,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_co2_open_space",
+          "unidad": "ppm",
+          "suma": false,
+          "tipo": "onda",
+          "base": 620,
+          "amp": 300,
+          "pico": 14,
+          "dec": 0,
+          "minimo": 420
+        },
+        {
+          "entity_id": "sensor.oficina_personas_presentes",
+          "unidad": "personas",
+          "suma": false,
+          "tipo": "onda",
+          "base": 8,
+          "amp": 10,
+          "pico": 13,
+          "dec": 0,
+          "minimo": 0
+        },
+        {
+          "entity_id": "sensor.oficina_luminosidad_open_space",
+          "unidad": "lx",
+          "suma": false,
+          "tipo": "onda",
+          "base": 380,
+          "amp": 320,
+          "pico": 13,
+          "dec": 0,
+          "minimo": 0
+        },
+        {
+          "entity_id": "sensor.oficina_consumo_electrico",
+          "unidad": "W",
+          "suma": false,
+          "tipo": "onda",
+          "base": 2300,
+          "amp": 1100,
+          "pico": 14,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_energia_hoy",
+          "unidad": "kWh",
+          "suma": true,
+          "tipo": "acumulado",
+          "p0": 2100,
+          "amp": 1100,
+          "pico": 14,
+          "factor": 0.001
+        },
+        {
+          "entity_id": "sensor.oficina_ups_autonomia",
+          "unidad": "min",
+          "suma": false,
+          "tipo": "onda",
+          "base": 46,
+          "amp": 3,
+          "pico": 12,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_ups_carga_conectada",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 38,
+          "amp": 7,
+          "pico": 14,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_internet_latencia",
+          "unidad": "ms",
+          "suma": false,
+          "tipo": "onda",
+          "base": 16,
+          "amp": 5,
+          "pico": 15,
+          "dec": 0,
+          "minimo": 8
+        },
+        {
+          "entity_id": "sensor.oficina_internet_descarga",
+          "unidad": "Mbit/s",
+          "suma": false,
+          "tipo": "onda",
+          "base": 310,
+          "amp": -45,
+          "pico": 14,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_internet_subida",
+          "unidad": "Mbit/s",
+          "suma": false,
+          "tipo": "onda",
+          "base": 142,
+          "amp": -22,
+          "pico": 14,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.oficina_servidor_cpu",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 34,
+          "amp": 22,
+          "pico": 11,
+          "dec": 0,
+          "minimo": 3
+        },
+        {
+          "entity_id": "sensor.oficina_nas_temperatura_de_discos",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 38,
+          "amp": 3,
+          "pico": 16,
+          "dec": 0,
+          "minimo": null
+        }
+      ]
+    },
+    "comercio": {
+      "dashboard": {
+        "url_path": "dashboard-comercio",
+        "titulo": "Comercio",
+        "icono": "mdi:storefront",
+        "archivo": "dashboards/comercio.yaml"
+      },
+      "vigilar": [
+        "sensor.comercio_temperatura_heladera_1",
+        "sensor.comercio_temperatura_freezer",
+        "binary_sensor.comercio_terminal_de_cobro_conectado"
+      ],
+      "ocultar": [
+        "input_boolean.demo_comercio_cerradura_dep",
+        "input_boolean.demo_comercio_inicializado",
+        "switch.comercio_aa_salon_compresor"
+      ],
+      "historial": [
+        {
+          "entity_id": "sensor.comercio_temperatura_heladera_1",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 3.6,
+          "amp": 0.7,
+          "pico": 13,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_temperatura_heladera_2",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 4.1,
+          "amp": 0.6,
+          "pico": 14,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_temperatura_freezer",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": -18.4,
+          "amp": 1.2,
+          "pico": 14,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_temperatura_salon",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 23.8,
+          "amp": 2.0,
+          "pico": 16,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_humedad_salon",
+          "unidad": "%",
+          "suma": false,
+          "tipo": "onda",
+          "base": 50,
+          "amp": -6,
+          "pico": 16,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_temperatura_deposito",
+          "unidad": "°C",
+          "suma": false,
+          "tipo": "onda",
+          "base": 19.5,
+          "amp": 1.8,
+          "pico": 15,
+          "dec": 1,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_personas_en_el_local",
+          "unidad": "personas",
+          "suma": false,
+          "tipo": "onda",
+          "base": 6,
+          "amp": 9,
+          "pico": 18,
+          "dec": 0,
+          "minimo": 0
+        },
+        {
+          "entity_id": "sensor.comercio_clientes_hoy",
+          "unidad": "clientes",
+          "suma": true,
+          "tipo": "acumulado",
+          "p0": 7,
+          "amp": 6,
+          "pico": 17,
+          "factor": 1
+        },
+        {
+          "entity_id": "sensor.comercio_ventas_hoy",
+          "unidad": "$",
+          "suma": true,
+          "tipo": "acumulado",
+          "p0": 3400,
+          "amp": 2600,
+          "pico": 17,
+          "factor": 1
+        },
+        {
+          "entity_id": "sensor.comercio_ticket_promedio",
+          "unidad": "$",
+          "suma": false,
+          "tipo": "onda",
+          "base": 12400,
+          "amp": 1800,
+          "pico": 18,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_wi_fi_clientes_conectados",
+          "unidad": "dispositivos",
+          "suma": false,
+          "tipo": "onda",
+          "base": 7,
+          "amp": 9,
+          "pico": 18,
+          "dec": 0,
+          "minimo": 0
+        },
+        {
+          "entity_id": "sensor.comercio_luminosidad_vidriera",
+          "unidad": "lx",
+          "suma": false,
+          "tipo": "onda",
+          "base": 420,
+          "amp": 380,
+          "pico": 13,
+          "dec": 0,
+          "minimo": 0
+        },
+        {
+          "entity_id": "sensor.comercio_consumo_electrico",
+          "unidad": "W",
+          "suma": false,
+          "tipo": "onda",
+          "base": 2800,
+          "amp": 1300,
+          "pico": 17,
+          "dec": 0,
+          "minimo": null
+        },
+        {
+          "entity_id": "sensor.comercio_energia_hoy",
+          "unidad": "kWh",
+          "suma": true,
+          "tipo": "acumulado",
+          "p0": 2600,
+          "amp": 1300,
+          "pico": 17,
+          "factor": 0.001
+        }
+      ]
+    }
+  },
+  "usuarios": {
+    "juan": "hogar",
+    "pedro": "oficina",
+    "maria": "comercio"
+  }
+}

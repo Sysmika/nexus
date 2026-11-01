@@ -1,0 +1,484 @@
+# Dashboard demo "oficina" — GENERADO por tools/gen_demo.py (no editar a mano: se pisa en cada actualización).
+title: Nexus
+views:
+- title: Inicio
+  path: inicio
+  icon: mdi:office-building
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Accesos
+      heading_style: title
+      icon: mdi:shield-key
+      subheading: Alarma y cerraduras
+    - type: tile
+      entity: alarm_control_panel.oficina_alarma
+      grid_options:
+        columns: 12
+      name: Alarma
+      features:
+      - type: alarm-modes
+        modes:
+        - armed_home
+        - armed_away
+        - disarmed
+      features_position: bottom
+    - type: tile
+      entity: lock.oficina_cerradura_ingreso
+      grid_options:
+        columns: 12
+      name: Ingreso
+      features:
+      - type: lock-commands
+      features_position: bottom
+    - type: tile
+      entity: lock.oficina_cerradura_sala_de_servidores
+      grid_options:
+        columns: 12
+      name: Sala de servidores
+      features:
+      - type: lock-commands
+      features_position: bottom
+    - type: tile
+      entity: cover.oficina_porton_estacionamiento
+      grid_options:
+        columns: 12
+      name: Portón del estacionamiento
+      features:
+      - type: cover-open-close
+      features_position: bottom
+  - type: grid
+    cards:
+    - type: heading
+      heading: Ambiente
+      heading_style: title
+      icon: mdi:thermometer
+      subheading: Open space y climatización
+    - type: thermostat
+      entity: climate.oficina_aa_open_space
+      name: Aire acondicionado open space
+      features:
+      - type: climate-hvac-modes
+        hvac_modes:
+        - cool
+        - 'off'
+    - type: tile
+      entity: sensor.oficina_temperatura_open_space
+      name: Temperatura
+    - type: tile
+      entity: sensor.oficina_humedad_open_space
+      name: Humedad
+    - type: tile
+      entity: sensor.oficina_co2_open_space
+      name: CO₂
+    - type: tile
+      entity: sensor.oficina_personas_presentes
+      name: Personas
+    - type: tile
+      entity: binary_sensor.oficina_sala_de_reuniones_ocupada
+      name: Sala de reuniones
+    - type: tile
+      entity: sensor.oficina_consumo_electrico
+      name: Consumo
+  - type: grid
+    cards:
+    - type: heading
+      heading: Luces
+      heading_style: title
+      icon: mdi:lightbulb-group
+    - type: tile
+      entity: light.oficina_luz_recepcion
+      name: Recepción
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.oficina_luz_open_space
+      name: Open space
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.oficina_luz_sala_de_reuniones
+      name: Reuniones
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.oficina_luz_pasillo
+      name: Pasillo
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.oficina_luz_cartel
+      name: Cartel exterior
+  - type: grid
+    cards:
+    - type: heading
+      heading: Salas y cortinas
+      heading_style: title
+      icon: mdi:curtains
+    - type: tile
+      entity: cover.oficina_cortina_sala_de_reuniones
+      grid_options:
+        columns: 12
+      name: Cortina de reuniones
+      features:
+      - type: cover-open-close
+      - type: cover-position
+      features_position: bottom
+    - type: tile
+      entity: cover.oficina_persiana_open_space
+      grid_options:
+        columns: 12
+      name: Persiana open space
+      features:
+      - type: cover-open-close
+      - type: cover-position
+      features_position: bottom
+  - type: grid
+    cards:
+    - type: heading
+      heading: Equipos
+      heading_style: title
+      icon: mdi:power-plug
+    - type: tile
+      entity: switch.oficina_proyector
+      name: Proyector
+    - type: tile
+      entity: switch.oficina_cafetera
+      name: Cafetera
+    - type: tile
+      entity: switch.oficina_carteleria_digital
+      name: Cartelería
+    - type: tile
+      entity: switch.oficina_enchufes_escritorios
+      name: Escritorios
+  - type: grid
+    cards:
+    - type: heading
+      heading: Escenas
+      heading_style: title
+      icon: mdi:palette
+    - type: button
+      entity: script.demo_oficina_abrir
+      name: Abrir oficina
+      icon: mdi:key-variant
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_oficina_abrir
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_oficina_cerrar
+      name: Cerrar oficina
+      icon: mdi:lock-check
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_oficina_cerrar
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_oficina_reunion
+      name: Modo reunión
+      icon: mdi:presentation
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_oficina_reunion
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_oficina_ahorro
+      name: Ahorro
+      icon: mdi:leaf
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_oficina_ahorro
+      grid_options:
+        columns: 6
+        rows: 2
+- title: Infraestructura
+  path: infraestructura
+  icon: mdi:server-network
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Energía de respaldo
+      heading_style: title
+      icon: mdi:battery-charging-100
+      subheading: UPS
+    - type: gauge
+      entity: sensor.oficina_ups_carga_de_bateria
+      name: Batería de la UPS
+      min: 0
+      max: 100
+      severity:
+        green: 50
+        yellow: 25
+        red: 0
+    - type: tile
+      entity: sensor.oficina_ups_autonomia
+      grid_options:
+        columns: 12
+      name: Autonomía
+    - type: tile
+      entity: sensor.oficina_ups_carga_conectada
+      grid_options:
+        columns: 12
+      name: Carga conectada
+    - type: tile
+      entity: binary_sensor.oficina_ups_en_bateria
+      grid_options:
+        columns: 12
+      name: Funcionando con batería
+  - type: grid
+    cards:
+    - type: heading
+      heading: Internet
+      heading_style: title
+      icon: mdi:web
+      subheading: Conexión del edificio
+    - type: tile
+      entity: binary_sensor.oficina_internet_conectado
+      grid_options:
+        columns: 12
+      name: Internet
+    - type: tile
+      entity: sensor.oficina_internet_latencia
+      name: Latencia
+    - type: tile
+      entity: sensor.oficina_internet_descarga
+      name: Bajada
+    - type: tile
+      entity: sensor.oficina_internet_subida
+      name: Subida
+    - type: statistics-graph
+      title: Latencia (ms)
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.oficina_internet_latencia
+  - type: grid
+    cards:
+    - type: heading
+      heading: Sala de servidores
+      heading_style: title
+      icon: mdi:server
+    - type: thermostat
+      entity: climate.oficina_aa_sala_de_servidores
+      name: Aire de la sala de servidores
+    - type: tile
+      entity: sensor.oficina_temperatura_sala_de_servidores
+      name: Temperatura
+    - type: tile
+      entity: sensor.oficina_humedad_sala_de_servidores
+      name: Humedad
+    - type: tile
+      entity: sensor.oficina_servidor_cpu
+      name: CPU del servidor
+    - type: tile
+      entity: sensor.oficina_nas_temperatura_de_discos
+      name: Discos del NAS
+    - type: tile
+      entity: sensor.oficina_nas_espacio_usado
+      name: Espacio del NAS
+    - type: tile
+      entity: sensor.oficina_impresora_toner
+      name: Tóner impresora
+    - type: statistics-graph
+      title: Temperatura de la sala de servidores
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.oficina_temperatura_sala_de_servidores
+- title: Energía
+  path: energia
+  icon: mdi:lightning-bolt
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Consumo
+      heading_style: title
+      icon: mdi:flash
+      subheading: En vivo y del día
+    - type: gauge
+      entity: sensor.oficina_consumo_electrico
+      name: Potencia ahora
+      min: 0
+      max: 6000
+      needle: true
+      severity:
+        green: 0
+        yellow: 3500
+        red: 4800
+    - type: tile
+      entity: sensor.oficina_energia_hoy
+      grid_options:
+        columns: 12
+      name: Energía de hoy
+      icon: mdi:lightning-bolt-circle
+  - type: grid
+    cards:
+    - type: heading
+      heading: Evolución
+      heading_style: title
+      icon: mdi:chart-line
+      subheading: Últimos días
+    - type: statistics-graph
+      title: Potencia (promedio por hora)
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.oficina_consumo_electrico
+    - type: statistics-graph
+      title: Energía por día
+      days_to_show: 14
+      period: day
+      stat_types:
+      - change
+      chart_type: bar
+      entities:
+      - sensor.oficina_energia_hoy
+  - type: grid
+    cards:
+    - type: heading
+      heading: Ocupación
+      heading_style: title
+      icon: mdi:account-group
+      subheading: Últimos días
+    - type: statistics-graph
+      title: Personas presentes
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.oficina_personas_presentes
+    - type: statistics-graph
+      title: CO₂ del open space
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.oficina_co2_open_space
+- title: Seguridad
+  path: seguridad
+  icon: mdi:shield-home
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Alarma
+      heading_style: title
+      icon: mdi:shield-lock
+    - type: alarm-panel
+      entity: alarm_control_panel.oficina_alarma
+      name: Alarma de la oficina
+      states:
+      - arm_home
+      - arm_away
+  - type: grid
+    cards:
+    - type: heading
+      heading: Sensores
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.oficina_puerta_de_ingreso
+      grid_options:
+        columns: 12
+      name: Puerta de ingreso
+    - type: tile
+      entity: binary_sensor.oficina_puerta_sala_de_servidores
+      grid_options:
+        columns: 12
+      name: Puerta sala de servidores
+    - type: tile
+      entity: binary_sensor.oficina_movimiento_recepcion
+      grid_options:
+        columns: 12
+      name: Movimiento recepción
+    - type: tile
+      entity: binary_sensor.oficina_humo
+      grid_options:
+        columns: 12
+      name: Humo
+    - type: tile
+      entity: binary_sensor.oficina_fuga_de_agua_sala_de_servidores
+      grid_options:
+        columns: 12
+      name: Fuga de agua (servidores)
+    - type: tile
+      entity: sensor.oficina_bateria_sensor_puerta
+      grid_options:
+        columns: 12
+      name: Batería sensor puerta
+    - type: tile
+      entity: sensor.oficina_bateria_sensor_sala_de_servidores
+      grid_options:
+        columns: 12
+      name: Batería sensor servidores
+  - type: grid
+    cards:
+    - type: heading
+      heading: Actividad reciente
+      heading_style: title
+      icon: mdi:history
+    - type: logbook
+      hours_to_show: 24
+      target:
+        entity_id:
+        - binary_sensor.oficina_puerta_de_ingreso
+        - binary_sensor.oficina_movimiento_recepcion
+        - lock.oficina_cerradura_ingreso
+        - lock.oficina_cerradura_sala_de_servidores
+        - alarm_control_panel.oficina_alarma
+        - binary_sensor.oficina_sala_de_reuniones_ocupada
+- !include views/soporte.yaml

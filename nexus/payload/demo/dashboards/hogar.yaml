@@ -1,0 +1,414 @@
+# Dashboard demo "hogar" — GENERADO por tools/gen_demo.py (no editar a mano: se pisa en cada actualización).
+title: Nexus
+views:
+- title: Inicio
+  path: inicio
+  icon: mdi:home
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Tu casa
+      heading_style: title
+      icon: mdi:home-heart
+      subheading: Todo en un vistazo
+    - type: tile
+      entity: alarm_control_panel.hogar_alarma
+      grid_options:
+        columns: 12
+      name: Alarma
+      features:
+      - type: alarm-modes
+        modes:
+        - armed_home
+        - armed_away
+        - disarmed
+      features_position: bottom
+    - type: tile
+      entity: lock.hogar_cerradura_puerta
+      grid_options:
+        columns: 12
+      name: Puerta de entrada
+      features:
+      - type: lock-commands
+      features_position: bottom
+    - type: tile
+      entity: binary_sensor.hogar_presencia
+      name: Presencia
+    - type: tile
+      entity: binary_sensor.hogar_puerta_principal
+      name: Puerta
+    - type: tile
+      entity: binary_sensor.hogar_movimiento_pasillo
+      name: Movimiento
+    - type: tile
+      entity: sensor.hogar_consumo_electrico
+      name: Consumo
+      icon: mdi:flash
+  - type: grid
+    cards:
+    - type: heading
+      heading: Clima
+      heading_style: title
+      icon: mdi:thermometer
+      subheading: Ambientes y aire acondicionado
+    - type: thermostat
+      entity: climate.hogar_aa_living
+      name: Aire acondicionado living
+      features:
+      - type: climate-hvac-modes
+        hvac_modes:
+        - cool
+        - 'off'
+    - type: tile
+      entity: sensor.hogar_temperatura_living
+      name: Living
+      icon: mdi:sofa
+    - type: tile
+      entity: sensor.hogar_humedad_living
+      name: Humedad
+    - type: tile
+      entity: sensor.hogar_temperatura_dormitorio
+      name: Dormitorio
+      icon: mdi:bed
+    - type: tile
+      entity: sensor.hogar_temperatura_cocina
+      name: Cocina
+      icon: mdi:countertop
+    - type: tile
+      entity: sensor.hogar_temperatura_exterior
+      name: Exterior
+      icon: mdi:tree
+    - type: tile
+      entity: sensor.hogar_co2_living
+      name: CO₂
+  - type: grid
+    cards:
+    - type: heading
+      heading: Luces
+      heading_style: title
+      icon: mdi:lightbulb-group
+    - type: tile
+      entity: light.hogar_luz_living
+      name: Living
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.hogar_luz_cocina
+      name: Cocina
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.hogar_luz_dormitorio
+      name: Dormitorio
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.hogar_luz_pasillo
+      name: Pasillo
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.hogar_luz_jardin
+      name: Jardín
+  - type: grid
+    cards:
+    - type: heading
+      heading: Persianas y accesos
+      heading_style: title
+      icon: mdi:blinds
+    - type: tile
+      entity: cover.hogar_persiana_living
+      grid_options:
+        columns: 12
+      name: Persiana living
+      features:
+      - type: cover-open-close
+      - type: cover-position
+      features_position: bottom
+    - type: tile
+      entity: cover.hogar_persiana_dormitorio
+      grid_options:
+        columns: 12
+      name: Persiana dormitorio
+      features:
+      - type: cover-open-close
+      - type: cover-position
+      features_position: bottom
+    - type: tile
+      entity: cover.hogar_porton_garage
+      grid_options:
+        columns: 12
+      name: Portón del garage
+      features:
+      - type: cover-open-close
+      features_position: bottom
+  - type: grid
+    cards:
+    - type: heading
+      heading: Equipos
+      heading_style: title
+      icon: mdi:power-plug
+    - type: tile
+      entity: switch.hogar_riego_jardin
+      name: Riego
+    - type: tile
+      entity: switch.hogar_bomba_piscina
+      name: Piscina
+    - type: tile
+      entity: switch.hogar_enchufe_tv
+      name: TV
+    - type: tile
+      entity: switch.hogar_cargador_auto
+      name: Cargador auto
+  - type: grid
+    cards:
+    - type: heading
+      heading: Escenas
+      heading_style: title
+      icon: mdi:palette
+    - type: button
+      entity: script.demo_hogar_buenos_dias
+      name: Buenos días
+      icon: mdi:weather-sunny
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_hogar_buenos_dias
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_hogar_buenas_noches
+      name: Buenas noches
+      icon: mdi:weather-night
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_hogar_buenas_noches
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_hogar_salgo
+      name: Salgo de casa
+      icon: mdi:exit-run
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_hogar_salgo
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_hogar_cine
+      name: Modo cine
+      icon: mdi:movie-open
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_hogar_cine
+      grid_options:
+        columns: 6
+        rows: 2
+- title: Energía
+  path: energia
+  icon: mdi:lightning-bolt
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Consumo
+      heading_style: title
+      icon: mdi:flash
+      subheading: En vivo y del día
+    - type: gauge
+      entity: sensor.hogar_consumo_electrico
+      name: Potencia ahora
+      min: 0
+      max: 3000
+      needle: true
+      severity:
+        green: 0
+        yellow: 1500
+        red: 2300
+    - type: tile
+      entity: sensor.hogar_energia_hoy
+      grid_options:
+        columns: 12
+      name: Energía de hoy
+      icon: mdi:lightning-bolt-circle
+  - type: grid
+    cards:
+    - type: heading
+      heading: Evolución
+      heading_style: title
+      icon: mdi:chart-line
+      subheading: Últimos días
+    - type: statistics-graph
+      title: Potencia (promedio por hora)
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.hogar_consumo_electrico
+    - type: statistics-graph
+      title: Energía por día
+      days_to_show: 14
+      period: day
+      stat_types:
+      - change
+      chart_type: bar
+      entities:
+      - sensor.hogar_energia_hoy
+  - type: grid
+    cards:
+    - type: heading
+      heading: Ambiente
+      heading_style: title
+      icon: mdi:thermometer-lines
+      subheading: Últimos días
+    - type: statistics-graph
+      title: Temperaturas
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.hogar_temperatura_living
+      - sensor.hogar_temperatura_dormitorio
+      - sensor.hogar_temperatura_cocina
+      - sensor.hogar_temperatura_exterior
+    - type: statistics-graph
+      title: CO₂ del living
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.hogar_co2_living
+- title: Seguridad
+  path: seguridad
+  icon: mdi:shield-home
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Alarma y accesos
+      heading_style: title
+      icon: mdi:shield-lock
+    - type: alarm-panel
+      entity: alarm_control_panel.hogar_alarma
+      name: Alarma del hogar
+      states:
+      - arm_home
+      - arm_away
+    - type: tile
+      entity: lock.hogar_cerradura_puerta
+      name: Puerta de entrada
+      features:
+      - type: lock-commands
+      features_position: bottom
+    - type: tile
+      entity: cover.hogar_porton_garage
+      name: Portón del garage
+      features:
+      - type: cover-open-close
+      features_position: bottom
+  - type: grid
+    cards:
+    - type: heading
+      heading: Sensores
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.hogar_puerta_principal
+      grid_options:
+        columns: 12
+      name: Puerta principal
+    - type: tile
+      entity: binary_sensor.hogar_ventana_dormitorio
+      grid_options:
+        columns: 12
+      name: Ventana dormitorio
+    - type: tile
+      entity: binary_sensor.hogar_movimiento_pasillo
+      grid_options:
+        columns: 12
+      name: Movimiento pasillo
+    - type: tile
+      entity: binary_sensor.hogar_fuga_de_agua_bano
+      grid_options:
+        columns: 12
+      name: Fuga de agua (baño)
+    - type: tile
+      entity: binary_sensor.hogar_humo_cocina
+      grid_options:
+        columns: 12
+      name: Humo (cocina)
+  - type: grid
+    cards:
+    - type: heading
+      heading: Baterías
+      heading_style: title
+      icon: mdi:battery-heart-variant
+    - type: tile
+      entity: sensor.hogar_bateria_sensor_puerta
+      grid_options:
+        columns: 12
+      name: Sensor de puerta
+    - type: tile
+      entity: sensor.hogar_bateria_sensor_movimiento
+      grid_options:
+        columns: 12
+      name: Sensor de movimiento
+    - type: tile
+      entity: sensor.hogar_bateria_sensor_fuga
+      grid_options:
+        columns: 12
+      name: Sensor de fuga
+  - type: grid
+    cards:
+    - type: heading
+      heading: Actividad reciente
+      heading_style: title
+      icon: mdi:history
+    - type: logbook
+      hours_to_show: 24
+      target:
+        entity_id:
+        - binary_sensor.hogar_movimiento_pasillo
+        - binary_sensor.hogar_ventana_dormitorio
+        - lock.hogar_cerradura_puerta
+        - alarm_control_panel.hogar_alarma
+        - cover.hogar_porton_garage
+- !include views/soporte.yaml

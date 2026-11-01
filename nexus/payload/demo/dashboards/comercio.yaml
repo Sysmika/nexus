@@ -1,0 +1,471 @@
+# Dashboard demo "comercio" — GENERADO por tools/gen_demo.py (no editar a mano: se pisa en cada actualización).
+title: Nexus
+views:
+- title: Inicio
+  path: inicio
+  icon: mdi:storefront
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Hoy
+      heading_style: title
+      icon: mdi:cash-register
+      subheading: El día en números
+    - type: tile
+      entity: sensor.comercio_ventas_hoy
+      grid_options:
+        columns: 12
+      name: Ventas de hoy
+      icon: mdi:cash-register
+    - type: tile
+      entity: sensor.comercio_clientes_hoy
+      name: Clientes
+    - type: tile
+      entity: sensor.comercio_ticket_promedio
+      name: Ticket promedio
+    - type: tile
+      entity: sensor.comercio_personas_en_el_local
+      name: En el local
+    - type: tile
+      entity: sensor.comercio_wi_fi_clientes_conectados
+      name: Wi-Fi
+  - type: grid
+    cards:
+    - type: heading
+      heading: Local
+      heading_style: title
+      icon: mdi:store
+      subheading: Apertura y accesos
+    - type: tile
+      entity: alarm_control_panel.comercio_alarma
+      grid_options:
+        columns: 12
+      name: Alarma
+      features:
+      - type: alarm-modes
+        modes:
+        - armed_home
+        - armed_away
+        - disarmed
+      features_position: bottom
+    - type: tile
+      entity: cover.comercio_cortina_metalica
+      grid_options:
+        columns: 12
+      name: Cortina metálica
+      features:
+      - type: cover-open-close
+      - type: cover-position
+      features_position: bottom
+    - type: tile
+      entity: cover.comercio_toldo
+      grid_options:
+        columns: 12
+      name: Toldo
+      features:
+      - type: cover-open-close
+      features_position: bottom
+    - type: tile
+      entity: lock.comercio_cerradura_deposito
+      grid_options:
+        columns: 12
+      name: Depósito
+      features:
+      - type: lock-commands
+      features_position: bottom
+  - type: grid
+    cards:
+    - type: heading
+      heading: Luces
+      heading_style: title
+      icon: mdi:lightbulb-group
+    - type: tile
+      entity: light.comercio_luz_vidriera
+      name: Vidriera
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.comercio_luz_salon
+      name: Salón
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.comercio_luz_gondolas
+      name: Góndolas
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.comercio_luz_deposito
+      name: Depósito
+      features:
+      - type: light-brightness
+      features_position: bottom
+    - type: tile
+      entity: light.comercio_luz_cartel_led
+      name: Cartel LED
+  - type: grid
+    cards:
+    - type: heading
+      heading: Ambiente
+      heading_style: title
+      icon: mdi:thermometer
+    - type: thermostat
+      entity: climate.comercio_aa_salon
+      name: Aire acondicionado del salón
+      features:
+      - type: climate-hvac-modes
+        hvac_modes:
+        - cool
+        - 'off'
+    - type: tile
+      entity: sensor.comercio_temperatura_salon
+      name: Salón
+    - type: tile
+      entity: sensor.comercio_humedad_salon
+      name: Humedad
+  - type: grid
+    cards:
+    - type: heading
+      heading: Equipos
+      heading_style: title
+      icon: mdi:power-plug
+    - type: tile
+      entity: switch.comercio_musica_ambiente
+      name: Música
+    - type: tile
+      entity: switch.comercio_cartel_abierto
+      name: Cartel Abierto
+    - type: tile
+      entity: switch.comercio_carteleria_promociones
+      name: Promociones
+    - type: tile
+      entity: switch.comercio_maquina_de_cafe
+      name: Café
+  - type: grid
+    cards:
+    - type: heading
+      heading: Escenas
+      heading_style: title
+      icon: mdi:palette
+    - type: button
+      entity: script.demo_comercio_abrir
+      name: Abrir local
+      icon: mdi:store-check
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_comercio_abrir
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_comercio_cerrar
+      name: Cerrar local
+      icon: mdi:store-remove
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_comercio_cerrar
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_comercio_promo
+      name: Promoción
+      icon: mdi:sale
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_comercio_promo
+      grid_options:
+        columns: 6
+        rows: 2
+    - type: button
+      entity: script.demo_comercio_limpieza
+      name: Limpieza
+      icon: mdi:broom
+      show_state: false
+      icon_height: 34px
+      tap_action:
+        action: perform-action
+        perform_action: script.turn_on
+        target:
+          entity_id: script.demo_comercio_limpieza
+      grid_options:
+        columns: 6
+        rows: 2
+- title: Ventas
+  path: ventas
+  icon: mdi:chart-areaspline
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Hoy
+      heading_style: title
+      icon: mdi:cash-register
+    - type: gauge
+      entity: sensor.comercio_clientes_hoy
+      name: Clientes de hoy
+      min: 0
+      max: 300
+      severity:
+        green: 120
+        yellow: 60
+        red: 0
+    - type: tile
+      entity: sensor.comercio_ventas_hoy
+      grid_options:
+        columns: 12
+      name: Ventas de hoy
+      icon: mdi:cash-register
+    - type: tile
+      entity: sensor.comercio_ticket_promedio
+      grid_options:
+        columns: 12
+      name: Ticket promedio
+  - type: grid
+    cards:
+    - type: heading
+      heading: Evolución
+      heading_style: title
+      icon: mdi:chart-line
+      subheading: Últimos días
+    - type: statistics-graph
+      title: Ventas por día ($)
+      days_to_show: 14
+      period: day
+      stat_types:
+      - change
+      chart_type: bar
+      entities:
+      - sensor.comercio_ventas_hoy
+    - type: statistics-graph
+      title: Clientes por día
+      days_to_show: 14
+      period: day
+      stat_types:
+      - change
+      chart_type: bar
+      entities:
+      - sensor.comercio_clientes_hoy
+  - type: grid
+    cards:
+    - type: heading
+      heading: Movimiento del local
+      heading_style: title
+      icon: mdi:account-group
+    - type: statistics-graph
+      title: Personas en el local
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.comercio_personas_en_el_local
+    - type: statistics-graph
+      title: Dispositivos Wi-Fi
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.comercio_wi_fi_clientes_conectados
+- title: Cadena de frío
+  path: frio
+  icon: mdi:snowflake-thermometer
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Heladeras y freezer
+      heading_style: title
+      icon: mdi:fridge-industrial
+      subheading: Control de temperatura
+    - type: tile
+      entity: sensor.comercio_temperatura_heladera_1
+      grid_options:
+        columns: 12
+      name: Heladera 1
+      icon: mdi:fridge
+    - type: tile
+      entity: sensor.comercio_temperatura_heladera_2
+      grid_options:
+        columns: 12
+      name: Heladera 2
+      icon: mdi:fridge
+    - type: tile
+      entity: sensor.comercio_temperatura_freezer
+      grid_options:
+        columns: 12
+      name: Freezer
+      icon: mdi:fridge-top
+    - type: tile
+      entity: binary_sensor.comercio_puerta_heladera_1
+      grid_options:
+        columns: 12
+      name: Puerta heladera 1
+  - type: grid
+    cards:
+    - type: heading
+      heading: Historial
+      heading_style: title
+      icon: mdi:chart-line
+      subheading: Últimos días
+    - type: statistics-graph
+      title: Heladeras (°C)
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.comercio_temperatura_heladera_1
+      - sensor.comercio_temperatura_heladera_2
+    - type: statistics-graph
+      title: Freezer (°C)
+      days_to_show: 3
+      period: hour
+      stat_types:
+      - mean
+      chart_type: line
+      entities:
+      - sensor.comercio_temperatura_freezer
+  - type: grid
+    cards:
+    - type: heading
+      heading: Sensores
+      heading_style: title
+      icon: mdi:battery-heart-variant
+    - type: tile
+      entity: sensor.comercio_bateria_sensor_heladera_1
+      grid_options:
+        columns: 12
+      name: Batería sensor heladera
+    - type: tile
+      entity: sensor.comercio_bateria_sensor_freezer
+      grid_options:
+        columns: 12
+      name: Batería sensor freezer
+    - type: tile
+      entity: sensor.comercio_temperatura_deposito
+      grid_options:
+        columns: 12
+      name: Depósito
+- title: Seguridad
+  path: seguridad
+  icon: mdi:shield-home
+  type: sections
+  max_columns: 3
+  theme: Nexus
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Alarma
+      heading_style: title
+      icon: mdi:shield-lock
+    - type: alarm-panel
+      entity: alarm_control_panel.comercio_alarma
+      name: Alarma del local
+      states:
+      - arm_home
+      - arm_away
+    - type: tile
+      entity: sensor.comercio_consumo_electrico
+      grid_options:
+        columns: 12
+      name: Consumo ahora
+      icon: mdi:flash
+    - type: tile
+      entity: sensor.comercio_energia_hoy
+      grid_options:
+        columns: 12
+      name: Energía de hoy
+  - type: grid
+    cards:
+    - type: heading
+      heading: Sensores y cobro
+      heading_style: title
+      icon: mdi:motion-sensor
+    - type: tile
+      entity: binary_sensor.comercio_puerta_de_ingreso
+      grid_options:
+        columns: 12
+      name: Puerta de ingreso
+    - type: tile
+      entity: binary_sensor.comercio_puerta_deposito
+      grid_options:
+        columns: 12
+      name: Puerta del depósito
+    - type: tile
+      entity: binary_sensor.comercio_movimiento_salon
+      grid_options:
+        columns: 12
+      name: Movimiento salón
+    - type: tile
+      entity: binary_sensor.comercio_movimiento_deposito
+      grid_options:
+        columns: 12
+      name: Movimiento depósito
+    - type: tile
+      entity: binary_sensor.comercio_caja_abierta
+      grid_options:
+        columns: 12
+      name: Caja registradora
+    - type: tile
+      entity: binary_sensor.comercio_terminal_de_cobro_conectado
+      grid_options:
+        columns: 12
+      name: Terminal de cobro
+    - type: tile
+      entity: binary_sensor.comercio_internet_conectado
+      grid_options:
+        columns: 12
+      name: Internet
+    - type: tile
+      entity: sensor.comercio_impresora_fiscal_papel
+      grid_options:
+        columns: 12
+      name: Papel impresora fiscal
+  - type: grid
+    cards:
+    - type: heading
+      heading: Actividad reciente
+      heading_style: title
+      icon: mdi:history
+    - type: logbook
+      hours_to_show: 24
+      target:
+        entity_id:
+        - binary_sensor.comercio_puerta_de_ingreso
+        - binary_sensor.comercio_caja_abierta
+        - binary_sensor.comercio_movimiento_deposito
+        - lock.comercio_cerradura_deposito
+        - alarm_control_panel.comercio_alarma
+        - cover.comercio_cortina_metalica
+- !include views/soporte.yaml

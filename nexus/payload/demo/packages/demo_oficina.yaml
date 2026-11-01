@@ -1,0 +1,502 @@
+# Entidades FICTICIAS del modo demo "oficina" — GENERADO por tools/gen_demo.py (no editar a mano).
+input_boolean:
+  demo_falla_oficina:
+    name: Demo · Simular falla del sensor de la sala de servidores
+    icon: mdi:alert-circle-outline
+  demo_oficina_cerradura_ingreso:
+    name: Demo · Oficina cerradura ingreso
+    icon: mdi:lock
+    initial: true
+  demo_oficina_cerradura_srv:
+    name: Demo · Oficina cerradura servidores
+    icon: mdi:lock
+    initial: true
+  demo_oficina_inicializado:
+    name: Demo · Oficina ya inicializada
+    icon: mdi:check
+    initial: false
+template:
+- sensor:
+  - name: Oficina Temperatura Sala de Servidores
+    unique_id: demo_of_temp_srv
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (24.0 + 1.4 * cos((h - 15) * 0.2618) + r * 0.2) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+    availability: '{{ is_state(''input_boolean.demo_falla_oficina'', ''off'') }}'
+  - name: Oficina Humedad Sala de Servidores
+    unique_id: demo_of_hum_srv
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (42 + -4 * cos((h - 15) * 0.2618) + r * 1) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+  - name: Oficina Temperatura Open Space
+    unique_id: demo_of_temp_open
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (23.5 + 2.2 * cos((h - 15) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Oficina Humedad Open Space
+    unique_id: demo_of_hum_open
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (48 + -6 * cos((h - 15) * 0.2618) + r * 1) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+  - name: Oficina CO2 Open Space
+    unique_id: demo_of_co2
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(420, 620 + 300 * cos((h - 14) * 0.2618) + r * 14)) | round(0) }}'
+    unit_of_measurement: ppm
+    device_class: carbon_dioxide
+    state_class: measurement
+  - name: Oficina Personas Presentes
+    unique_id: demo_of_personas
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(0, 8 + 10 * cos((h - 13) * 0.2618) + r * 0.8)) | round(0) }}'
+    unit_of_measurement: personas
+    state_class: measurement
+    icon: mdi:account-group
+  - name: Oficina Luminosidad Open Space
+    unique_id: demo_of_lux
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(0, 380 + 320 * cos((h - 13) * 0.2618) + r * 18)) | round(0) }}'
+    unit_of_measurement: lx
+    device_class: illuminance
+    state_class: measurement
+  - name: Oficina Consumo Eléctrico
+    unique_id: demo_of_potencia
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{% set luces = [''light.oficina_luz_recepcion'', ''light.oficina_luz_open_space'', ''light.oficina_luz_sala_de_reuniones'', ''light.oficina_luz_pasillo'', ''light.oficina_luz_cartel''] %}{{ (2100 + 1100 * cos((h - 14) * 0.2618) + r * 60 + (luces | select(''is_state'', ''on'') | list | count) * 55 + (1200 if is_state(''switch.oficina_aa_open_space_compresor'', ''on'') else 0)) | round(0) }}'
+    unit_of_measurement: W
+    device_class: power
+    state_class: measurement
+  - name: Oficina Energía Hoy
+    unique_id: demo_of_energia
+    state: '{% set h = now().hour + now().minute / 60 %}{{ ((2100 * h + 1100 * (sin((h - 14) * 0.2618) - sin(-14 * 0.2618)) / 0.2618) * 0.001) | round(2) }}'
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  - name: Oficina UPS Carga de Batería
+    unique_id: demo_of_ups_bateria
+    state: '{{ 100 }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+  - name: Oficina UPS Autonomía
+    unique_id: demo_of_ups_min
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (46 + 3 * cos((h - 12) * 0.2618) + r * 0.5) | round(0) }}'
+    unit_of_measurement: min
+    state_class: measurement
+    icon: mdi:timer-outline
+  - name: Oficina UPS Carga Conectada
+    unique_id: demo_of_ups_carga
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (38 + 7 * cos((h - 14) * 0.2618) + r * 1) | round(0) }}'
+    unit_of_measurement: '%'
+    state_class: measurement
+    icon: mdi:gauge
+  - name: Oficina Internet Latencia
+    unique_id: demo_of_ping
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(8, 16 + 5 * cos((h - 15) * 0.2618) + r * 3)) | round(0) }}'
+    unit_of_measurement: ms
+    state_class: measurement
+    icon: mdi:speedometer
+  - name: Oficina Internet Descarga
+    unique_id: demo_of_bajada
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (310 + -45 * cos((h - 14) * 0.2618) + r * 8) | round(0) }}'
+    unit_of_measurement: Mbit/s
+    device_class: data_rate
+    state_class: measurement
+  - name: Oficina Internet Subida
+    unique_id: demo_of_subida
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (142 + -22 * cos((h - 14) * 0.2618) + r * 5) | round(0) }}'
+    unit_of_measurement: Mbit/s
+    device_class: data_rate
+    state_class: measurement
+  - name: Oficina Servidor CPU
+    unique_id: demo_of_cpu
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(3, 34 + 22 * cos((h - 11) * 0.2618) + r * 4)) | round(0) }}'
+    unit_of_measurement: '%'
+    state_class: measurement
+    icon: mdi:cpu-64-bit
+  - name: Oficina NAS Temperatura de Discos
+    unique_id: demo_of_nas_temp
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (38 + 3 * cos((h - 16) * 0.2618) + r * 0.4) | round(0) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Oficina NAS Espacio Usado
+    unique_id: demo_of_nas_uso
+    state: '{{ (58 + (now().timetuple().tm_yday % 30) * 0.2) | round(1) }}'
+    unit_of_measurement: '%'
+    state_class: measurement
+    icon: mdi:harddisk
+  - name: Oficina Impresora Tóner
+    unique_id: demo_of_toner
+    state: '{{ (71 - ((now().timetuple().tm_yday * 3) % 90) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    state_class: measurement
+    icon: mdi:printer
+  - name: Oficina Batería Sensor Puerta
+    unique_id: demo_of_bat_puerta
+    state: '{{ (81 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+  - name: Oficina Batería Sensor Sala de Servidores
+    unique_id: demo_of_bat_srv
+    state: '{{ (67 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+- binary_sensor:
+  - name: Oficina Puerta de Ingreso
+    unique_id: demo_of_puerta
+    device_class: door
+    state: '{{ now().minute % 17 == 3 and 8 <= now().hour < 19 }}'
+  - name: Oficina Puerta Sala de Servidores
+    unique_id: demo_of_puerta_srv
+    device_class: door
+    state: '{{ false }}'
+  - name: Oficina Movimiento Recepción
+    unique_id: demo_of_mov_rec
+    device_class: motion
+    state: '{{ 8 <= now().hour < 19 and now().minute % 7 < 3 }}'
+  - name: Oficina Sala de Reuniones Ocupada
+    unique_id: demo_of_reunion
+    device_class: occupancy
+    state: '{{ now().hour in [10, 11, 15, 16] }}'
+  - name: Oficina Internet Conectado
+    unique_id: demo_of_internet
+    device_class: connectivity
+    state: '{{ true }}'
+  - name: Oficina UPS en Batería
+    unique_id: demo_of_ups_en_bateria
+    device_class: power
+    state: '{{ false }}'
+  - name: Oficina Humo
+    unique_id: demo_of_humo
+    device_class: smoke
+    state: '{{ false }}'
+  - name: Oficina Fuga de Agua Sala de Servidores
+    unique_id: demo_of_fuga
+    device_class: moisture
+    state: '{{ false }}'
+- light:
+  - name: Oficina Luz Recepción
+    unique_id: demo_of_luz_rec
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:desk-lamp
+  - name: Oficina Luz Open Space
+    unique_id: demo_of_luz_open
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:ceiling-light
+  - name: Oficina Luz Sala de Reuniones
+    unique_id: demo_of_luz_reu
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:presentation
+  - name: Oficina Luz Pasillo
+    unique_id: demo_of_luz_pas
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:lightbulb-group
+  - name: Oficina Luz Cartel
+    unique_id: demo_of_luz_cartel
+    turn_on: []
+    turn_off: []
+    icon: mdi:sign-direction
+- switch:
+  - name: Oficina Proyector
+    unique_id: demo_of_proyector
+    turn_on: []
+    turn_off: []
+    icon: mdi:projector
+  - name: Oficina Cafetera
+    unique_id: demo_of_cafetera
+    turn_on: []
+    turn_off: []
+    icon: mdi:coffee-maker
+  - name: Oficina Cartelería Digital
+    unique_id: demo_of_carteleria
+    turn_on: []
+    turn_off: []
+    icon: mdi:monitor-shimmer
+  - name: Oficina Enchufes Escritorios
+    unique_id: demo_of_enchufes
+    turn_on: []
+    turn_off: []
+    icon: mdi:power-socket-ar
+  - name: Oficina AA Open Space Compresor
+    unique_id: demo_of_aa1_comp
+    turn_on: []
+    turn_off: []
+    icon: mdi:air-conditioner
+  - name: Oficina AA Sala de Servidores Compresor
+    unique_id: demo_of_aa2_comp
+    turn_on: []
+    turn_off: []
+    icon: mdi:air-conditioner
+- cover:
+  - name: Oficina Cortina Sala de Reuniones
+    unique_id: demo_of_cortina_reu
+    device_class: shade
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:curtains
+  - name: Oficina Persiana Open Space
+    unique_id: demo_of_pers_open
+    device_class: shade
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:blinds
+  - name: Oficina Portón Estacionamiento
+    unique_id: demo_of_porton
+    device_class: garage
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:gate
+- lock:
+  - name: Oficina Cerradura Ingreso
+    unique_id: demo_of_cerr_ing
+    state: '{{ is_state(''input_boolean.demo_oficina_cerradura_ingreso'', ''on'') | iif(''locked'', ''unlocked'') }}'
+    lock:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_oficina_cerradura_ingreso
+    unlock:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.demo_oficina_cerradura_ingreso
+  - name: Oficina Cerradura Sala de Servidores
+    unique_id: demo_of_cerr_srv
+    state: '{{ is_state(''input_boolean.demo_oficina_cerradura_srv'', ''on'') | iif(''locked'', ''unlocked'') }}'
+    lock:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_oficina_cerradura_srv
+    unlock:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.demo_oficina_cerradura_srv
+climate:
+- platform: generic_thermostat
+  name: Oficina AA Open Space
+  unique_id: demo_of_aa1
+  heater: switch.oficina_aa_open_space_compresor
+  target_sensor: sensor.oficina_temperatura_open_space
+  ac_mode: true
+  min_temp: 16
+  max_temp: 30
+  target_temp: 23
+  precision: 0.5
+  target_temp_step: 0.5
+  initial_hvac_mode: cool
+  cold_tolerance: 0.5
+  hot_tolerance: 0.5
+- platform: generic_thermostat
+  name: Oficina AA Sala de Servidores
+  unique_id: demo_of_aa2
+  heater: switch.oficina_aa_sala_de_servidores_compresor
+  target_sensor: sensor.oficina_temperatura_sala_de_servidores
+  ac_mode: true
+  min_temp: 16
+  max_temp: 30
+  target_temp: 22
+  precision: 0.5
+  target_temp_step: 0.5
+  initial_hvac_mode: cool
+  cold_tolerance: 0.5
+  hot_tolerance: 0.5
+alarm_control_panel:
+- platform: manual
+  name: Oficina Alarma
+  unique_id: demo_of_alarma
+  code_arm_required: false
+  arming_time: 5
+  delay_time: 5
+  trigger_time: 30
+script:
+  demo_oficina_abrir:
+    alias: Abrir la oficina
+    icon: mdi:key-variant
+    sequence:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.demo_oficina_cerradura_ingreso
+    - action: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.oficina_alarma
+    - action: light.turn_on
+      target:
+        entity_id:
+        - light.oficina_luz_recepcion
+        - light.oficina_luz_open_space
+        - light.oficina_luz_pasillo
+      data:
+        brightness_pct: 85
+    - action: cover.open_cover
+      target:
+        entity_id:
+        - cover.oficina_persiana_open_space
+        - cover.oficina_porton_estacionamiento
+    - action: switch.turn_on
+      target:
+        entity_id:
+        - switch.oficina_cafetera
+        - switch.oficina_carteleria_digital
+    - action: climate.turn_on
+      target:
+        entity_id:
+        - climate.oficina_aa_open_space
+  demo_oficina_cerrar:
+    alias: Cerrar la oficina
+    icon: mdi:lock-check
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.oficina_luz_recepcion
+        - light.oficina_luz_open_space
+        - light.oficina_luz_sala_de_reuniones
+        - light.oficina_luz_pasillo
+        - light.oficina_luz_cartel
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.oficina_proyector
+        - switch.oficina_cafetera
+        - switch.oficina_carteleria_digital
+        - switch.oficina_enchufes_escritorios
+    - action: cover.close_cover
+      target:
+        entity_id:
+        - cover.oficina_persiana_open_space
+        - cover.oficina_porton_estacionamiento
+    - action: input_boolean.turn_on
+      target:
+        entity_id:
+        - input_boolean.demo_oficina_cerradura_ingreso
+        - input_boolean.demo_oficina_cerradura_srv
+    - action: alarm_control_panel.alarm_arm_away
+      target:
+        entity_id: alarm_control_panel.oficina_alarma
+  demo_oficina_reunion:
+    alias: Modo reunión
+    icon: mdi:presentation
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.oficina_luz_sala_de_reuniones
+      data:
+        brightness_pct: 40
+    - action: cover.close_cover
+      target:
+        entity_id: cover.oficina_cortina_sala_de_reuniones
+    - action: switch.turn_on
+      target:
+        entity_id: switch.oficina_proyector
+  demo_oficina_ahorro:
+    alias: Modo ahorro de energía
+    icon: mdi:leaf
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.oficina_luz_sala_de_reuniones
+        - light.oficina_luz_pasillo
+        - light.oficina_luz_cartel
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.oficina_proyector
+        - switch.oficina_enchufes_escritorios
+    - action: climate.set_temperature
+      target:
+        entity_id: climate.oficina_aa_open_space
+      data:
+        temperature: 25
+  demo_oficina_inicializar:
+    alias: Demo · Estado inicial de la oficina
+    icon: mdi:restart
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.oficina_luz_recepcion
+      data:
+        brightness_pct: 90
+    - action: light.turn_on
+      target:
+        entity_id: light.oficina_luz_open_space
+      data:
+        brightness_pct: 100
+    - action: light.turn_on
+      target:
+        entity_id: light.oficina_luz_pasillo
+      data:
+        brightness_pct: 60
+    - action: light.turn_off
+      target:
+        entity_id: light.oficina_luz_sala_de_reuniones
+    - action: light.turn_on
+      target:
+        entity_id: light.oficina_luz_cartel
+    - action: cover.set_cover_position
+      target:
+        entity_id: cover.oficina_cortina_sala_de_reuniones
+      data:
+        position: 100
+    - action: cover.set_cover_position
+      target:
+        entity_id: cover.oficina_persiana_open_space
+      data:
+        position: 70
+    - action: cover.close_cover
+      target:
+        entity_id: cover.oficina_porton_estacionamiento
+    - action: switch.turn_on
+      target:
+        entity_id:
+        - switch.oficina_cafetera
+        - switch.oficina_carteleria_digital
+        - switch.oficina_enchufes_escritorios
+    - action: switch.turn_off
+      target:
+        entity_id: switch.oficina_proyector
+    - action: climate.set_temperature
+      target:
+        entity_id: climate.oficina_aa_open_space
+      data:
+        temperature: 23
+        hvac_mode: cool
+    - action: climate.set_temperature
+      target:
+        entity_id: climate.oficina_aa_sala_de_servidores
+      data:
+        temperature: 22
+        hvac_mode: cool
+automation:
+- id: demo_oficina_arranque
+  alias: Demo · Dejar la oficina en su estado inicial (una sola vez)
+  mode: single
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: input_boolean.demo_oficina_inicializado
+    state: 'off'
+  actions:
+  - delay:
+      seconds: 60
+  - action: script.demo_oficina_inicializar
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.demo_oficina_inicializado

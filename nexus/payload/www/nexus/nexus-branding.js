@@ -77,6 +77,33 @@
     meta('theme-color', '#1f4b7d');
   };
 
+  // --- entornos por usuario (modo demo) ---
+  // /local/nexus/entornos.json = { "usuarios": { "juan": "dashboard-hogar", ... } }. Solo afecta a los usuarios
+  // que figuran ahí (no administradores): ven únicamente su dashboard y entran directo a él. Es visual, no seguridad.
+  let entornos = null;
+  fetch(BASE + 'entornos.json', { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((j) => { entornos = j; })
+    .catch(() => {});
+  const miEntorno = () => {
+    const hass = ha()?.hass;
+    const n = hass?.user?.name;
+    if (!n || hass.user.is_admin || !entornos?.usuarios) return null;
+    return entornos.usuarios[n.toLowerCase()] || null;
+  };
+  let redirigido = false;
+  const irAlEntorno = () => {
+    const ent = miEntorno();
+    if (!ent || redirigido) return;
+    redirigido = true; // una sola vez por carga: después puede moverse libremente
+    const p = location.pathname;
+    if (p.startsWith('/' + ent)) return;
+    if (p === '/' || p.startsWith('/lovelace') || p.startsWith('/dashboard-')) {
+      history.replaceState(null, '', '/' + ent);
+      window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: true } }));
+    }
+  };
+
   // --- sidebar ---
   const arreglarSidebar = () => {
     const root = sidebar()?.shadowRoot;
@@ -91,10 +118,13 @@
     // usuarios no administradores: solo dashboards
     const hass = ha()?.hass;
     if (!CFG.simplificarParaClientes || !hass?.user || hass.user.is_admin) return;
+    const ent = miEntorno();
     root.querySelectorAll('a[href]').forEach((a) => {
       const panel = a.dataset.panel || new URL(a.href, location.origin).pathname.split('/')[1];
       const info = hass.panels?.[panel];
-      const visible = (info && info.component_name === 'lovelace') || CFG.panelesExtra.includes(panel);
+      const visible = ent
+        ? panel === ent
+        : (info && info.component_name === 'lovelace') || CFG.panelesExtra.includes(panel);
       const oculto = a.style.display === 'none';
       if (!visible && !oculto) a.style.display = 'none';
       if (visible && oculto) a.style.display = '';
@@ -122,6 +152,7 @@
       arreglarIconos();
       arreglarSidebar();
       arreglarMarcaAgua();
+      irAlEntorno();
     } catch (e) {
       console.warn('[nexus-branding]', e);
     }

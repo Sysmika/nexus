@@ -1,0 +1,417 @@
+# Entidades FICTICIAS del modo demo "hogar" — GENERADO por tools/gen_demo.py (no editar a mano).
+input_boolean:
+  demo_falla_hogar:
+    name: Demo · Simular falla del sensor del dormitorio
+    icon: mdi:alert-circle-outline
+  demo_hogar_cerradura:
+    name: Demo · Hogar cerradura puerta (cerrada)
+    icon: mdi:lock
+    initial: true
+  demo_hogar_inicializado:
+    name: Demo · Hogar ya inicializado
+    icon: mdi:check
+    initial: false
+template:
+- sensor:
+  - name: Hogar Temperatura Living
+    unique_id: demo_hogar_temp_living
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (23.5 + 2.0 * cos((h - 16) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Hogar Humedad Living
+    unique_id: demo_hogar_hum_living
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (52 + -7 * cos((h - 16) * 0.2618) + r * 1) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+  - name: Hogar Temperatura Dormitorio
+    unique_id: demo_hogar_temp_dormitorio
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (22.0 + 2.0 * cos((h - 17) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+    availability: '{{ is_state(''input_boolean.demo_falla_hogar'', ''off'') }}'
+  - name: Hogar Humedad Dormitorio
+    unique_id: demo_hogar_hum_dormitorio
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (55 + -6 * cos((h - 17) * 0.2618) + r * 1) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+  - name: Hogar Temperatura Cocina
+    unique_id: demo_hogar_temp_cocina
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (24.5 + 2.5 * cos((h - 14) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Hogar Temperatura Exterior
+    unique_id: demo_hogar_temp_exterior
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (20 + 7 * cos((h - 15) * 0.2618) + r * 0.4) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Hogar Humedad Exterior
+    unique_id: demo_hogar_hum_exterior
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (62 + -18 * cos((h - 15) * 0.2618) + r * 2) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+  - name: Hogar Presión
+    unique_id: demo_hogar_presion
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (1014 + 3 * cos((h - 10) * 0.2618) + r * 0.5) | round(1) }}'
+    unit_of_measurement: hPa
+    device_class: atmospheric_pressure
+    state_class: measurement
+  - name: Hogar CO2 Living
+    unique_id: demo_hogar_co2_living
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (640 + 190 * cos((h - 21) * 0.2618) + r * 12) | round(0) }}'
+    unit_of_measurement: ppm
+    device_class: carbon_dioxide
+    state_class: measurement
+  - name: Hogar Partículas PM2.5
+    unique_id: demo_hogar_pm25
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(1, 9 + 4 * cos((h - 19) * 0.2618) + r * 0.8)) | round(0) }}'
+    unit_of_measurement: µg/m³
+    device_class: pm25
+    state_class: measurement
+  - name: Hogar Luminosidad Living
+    unique_id: demo_hogar_lux_living
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(0, 330 + 340 * cos((h - 13) * 0.2618) + r * 20)) | round(0) }}'
+    unit_of_measurement: lx
+    device_class: illuminance
+    state_class: measurement
+  - name: Hogar Consumo Eléctrico
+    unique_id: demo_hogar_potencia
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{% set luces = [''light.hogar_luz_living'', ''light.hogar_luz_cocina'', ''light.hogar_luz_dormitorio'', ''light.hogar_luz_pasillo'', ''light.hogar_luz_jardin''] %}{{ (380 + 240 * cos((h - 20) * 0.2618) + r * 25 + (luces | select(''is_state'', ''on'') | list | count) * 45 + (900 if is_state(''switch.hogar_aa_living_compresor'', ''on'') else 0)) | round(0) }}'
+    unit_of_measurement: W
+    device_class: power
+    state_class: measurement
+  - name: Hogar Energía Hoy
+    unique_id: demo_hogar_energia_hoy
+    state: '{% set h = now().hour + now().minute / 60 %}{{ ((380 * h + 240 * (sin((h - 20) * 0.2618) - sin(-20 * 0.2618)) / 0.2618) * 0.001) | round(2) }}'
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  - name: Hogar Batería Sensor Puerta
+    unique_id: demo_hogar_bat_puerta
+    state: '{{ (86 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+  - name: Hogar Batería Sensor Movimiento
+    unique_id: demo_hogar_bat_mov
+    state: '{{ (74 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+  - name: Hogar Batería Sensor Fuga
+    unique_id: demo_hogar_bat_fuga
+    state: '{{ (92 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+- binary_sensor:
+  - name: Hogar Puerta Principal
+    unique_id: demo_hogar_puerta
+    device_class: door
+    state: '{{ false }}'
+  - name: Hogar Ventana Dormitorio
+    unique_id: demo_hogar_ventana
+    device_class: window
+    state: '{{ 10 <= now().hour < 18 }}'
+  - name: Hogar Movimiento Pasillo
+    unique_id: demo_hogar_mov_pasillo
+    device_class: motion
+    state: '{{ now().minute % 13 < 2 }}'
+  - name: Hogar Presencia
+    unique_id: demo_hogar_presencia
+    device_class: occupancy
+    state: '{{ now().hour >= 18 or now().hour < 8 }}'
+  - name: Hogar Fuga de Agua Baño
+    unique_id: demo_hogar_fuga
+    device_class: moisture
+    state: '{{ false }}'
+  - name: Hogar Humo Cocina
+    unique_id: demo_hogar_humo
+    device_class: smoke
+    state: '{{ false }}'
+- light:
+  - name: Hogar Luz Living
+    unique_id: demo_hogar_luz_living
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:sofa
+  - name: Hogar Luz Cocina
+    unique_id: demo_hogar_luz_cocina
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:countertop
+  - name: Hogar Luz Dormitorio
+    unique_id: demo_hogar_luz_dormitorio
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:bed
+  - name: Hogar Luz Pasillo
+    unique_id: demo_hogar_luz_pasillo
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:lightbulb-group
+  - name: Hogar Luz Jardín
+    unique_id: demo_hogar_luz_jardin
+    turn_on: []
+    turn_off: []
+    icon: mdi:outdoor-lamp
+- switch:
+  - name: Hogar Riego Jardín
+    unique_id: demo_hogar_riego
+    turn_on: []
+    turn_off: []
+    icon: mdi:sprinkler-variant
+  - name: Hogar Bomba Piscina
+    unique_id: demo_hogar_piscina
+    turn_on: []
+    turn_off: []
+    icon: mdi:pool
+  - name: Hogar Enchufe TV
+    unique_id: demo_hogar_tv
+    turn_on: []
+    turn_off: []
+    icon: mdi:television
+  - name: Hogar Cargador Auto
+    unique_id: demo_hogar_cargador
+    turn_on: []
+    turn_off: []
+    icon: mdi:ev-station
+  - name: Hogar AA Living Compresor
+    unique_id: demo_hogar_aa_compresor
+    turn_on: []
+    turn_off: []
+    icon: mdi:air-conditioner
+- cover:
+  - name: Hogar Persiana Living
+    unique_id: demo_hogar_pers_living
+    device_class: shade
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:blinds
+  - name: Hogar Persiana Dormitorio
+    unique_id: demo_hogar_pers_dorm
+    device_class: shade
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:blinds
+  - name: Hogar Portón Garage
+    unique_id: demo_hogar_garage
+    device_class: garage
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:garage
+- lock:
+  - name: Hogar Cerradura Puerta
+    unique_id: demo_hogar_cerradura
+    state: '{{ is_state(''input_boolean.demo_hogar_cerradura'', ''on'') | iif(''locked'', ''unlocked'') }}'
+    lock:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_hogar_cerradura
+    unlock:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.demo_hogar_cerradura
+climate:
+- platform: generic_thermostat
+  name: Hogar AA Living
+  unique_id: demo_hogar_aa_living
+  heater: switch.hogar_aa_living_compresor
+  target_sensor: sensor.hogar_temperatura_living
+  ac_mode: true
+  min_temp: 18
+  max_temp: 30
+  target_temp: 24
+  precision: 0.5
+  target_temp_step: 0.5
+  initial_hvac_mode: cool
+  cold_tolerance: 0.5
+  hot_tolerance: 0.5
+alarm_control_panel:
+- platform: manual
+  name: Hogar Alarma
+  unique_id: demo_hogar_alarma
+  code_arm_required: false
+  arming_time: 5
+  delay_time: 5
+  trigger_time: 30
+script:
+  demo_hogar_buenos_dias:
+    alias: Buenos días
+    icon: mdi:weather-sunny
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.hogar_luz_dormitorio
+        - light.hogar_luz_jardin
+        - light.hogar_luz_pasillo
+    - action: light.turn_on
+      target:
+        entity_id: light.hogar_luz_cocina
+      data:
+        brightness_pct: 80
+    - action: cover.open_cover
+      target:
+        entity_id:
+        - cover.hogar_persiana_living
+        - cover.hogar_persiana_dormitorio
+    - action: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.hogar_alarma
+  demo_hogar_buenas_noches:
+    alias: Buenas noches
+    icon: mdi:weather-night
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.hogar_luz_living
+        - light.hogar_luz_cocina
+        - light.hogar_luz_jardin
+    - action: light.turn_on
+      target:
+        entity_id: light.hogar_luz_dormitorio
+      data:
+        brightness_pct: 15
+    - action: cover.close_cover
+      target:
+        entity_id:
+        - cover.hogar_persiana_living
+        - cover.hogar_persiana_dormitorio
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_hogar_cerradura
+    - action: alarm_control_panel.alarm_arm_home
+      target:
+        entity_id: alarm_control_panel.hogar_alarma
+  demo_hogar_salgo:
+    alias: Salgo de casa
+    icon: mdi:exit-run
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.hogar_luz_living
+        - light.hogar_luz_cocina
+        - light.hogar_luz_dormitorio
+        - light.hogar_luz_pasillo
+        - light.hogar_luz_jardin
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.hogar_enchufe_tv
+        - switch.hogar_riego_jardin
+    - action: cover.close_cover
+      target:
+        entity_id: cover.hogar_porton_garage
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_hogar_cerradura
+    - action: alarm_control_panel.alarm_arm_away
+      target:
+        entity_id: alarm_control_panel.hogar_alarma
+  demo_hogar_cine:
+    alias: Modo cine
+    icon: mdi:movie-open
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.hogar_luz_living
+      data:
+        brightness_pct: 10
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.hogar_luz_cocina
+        - light.hogar_luz_pasillo
+    - action: cover.close_cover
+      target:
+        entity_id: cover.hogar_persiana_living
+    - action: switch.turn_on
+      target:
+        entity_id: switch.hogar_enchufe_tv
+  demo_hogar_inicializar:
+    alias: Demo · Estado inicial del hogar
+    icon: mdi:restart
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.hogar_luz_living
+      data:
+        brightness_pct: 70
+    - action: light.turn_on
+      target:
+        entity_id: light.hogar_luz_cocina
+      data:
+        brightness_pct: 100
+    - action: light.turn_on
+      target:
+        entity_id: light.hogar_luz_jardin
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.hogar_luz_dormitorio
+        - light.hogar_luz_pasillo
+    - action: cover.set_cover_position
+      target:
+        entity_id: cover.hogar_persiana_living
+      data:
+        position: 60
+    - action: cover.set_cover_position
+      target:
+        entity_id: cover.hogar_persiana_dormitorio
+      data:
+        position: 100
+    - action: cover.close_cover
+      target:
+        entity_id: cover.hogar_porton_garage
+    - action: switch.turn_on
+      target:
+        entity_id: switch.hogar_bomba_piscina
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.hogar_riego_jardin
+        - switch.hogar_cargador_auto
+        - switch.hogar_enchufe_tv
+    - action: climate.set_temperature
+      target:
+        entity_id: climate.hogar_aa_living
+      data:
+        temperature: 24
+        hvac_mode: cool
+automation:
+- id: demo_hogar_arranque
+  alias: Demo · Dejar el hogar en su estado inicial (una sola vez)
+  mode: single
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: input_boolean.demo_hogar_inicializado
+    state: 'off'
+  actions:
+  - delay:
+      seconds: 60
+  - action: script.demo_hogar_inicializar
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.demo_hogar_inicializado

@@ -1,0 +1,429 @@
+# Entidades FICTICIAS del modo demo "comercio" — GENERADO por tools/gen_demo.py (no editar a mano).
+input_boolean:
+  demo_falla_comercio:
+    name: Demo · Simular falla del sensor de la heladera
+    icon: mdi:alert-circle-outline
+  demo_comercio_cerradura_dep:
+    name: Demo · Comercio cerradura depósito
+    icon: mdi:lock
+    initial: true
+  demo_comercio_inicializado:
+    name: Demo · Comercio ya inicializado
+    icon: mdi:check
+    initial: false
+template:
+- sensor:
+  - name: Comercio Temperatura Heladera 1
+    unique_id: demo_co_hel1
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (3.6 + 0.7 * cos((h - 13) * 0.2618) + r * 0.25) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+    availability: '{{ is_state(''input_boolean.demo_falla_comercio'', ''off'') }}'
+  - name: Comercio Temperatura Heladera 2
+    unique_id: demo_co_hel2
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (4.1 + 0.6 * cos((h - 14) * 0.2618) + r * 0.25) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Comercio Temperatura Freezer
+    unique_id: demo_co_frz
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (-18.4 + 1.2 * cos((h - 14) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Comercio Temperatura Salón
+    unique_id: demo_co_temp
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (23.8 + 2.0 * cos((h - 16) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Comercio Humedad Salón
+    unique_id: demo_co_hum
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (50 + -6 * cos((h - 16) * 0.2618) + r * 1) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: humidity
+    state_class: measurement
+  - name: Comercio Temperatura Depósito
+    unique_id: demo_co_dep
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (19.5 + 1.8 * cos((h - 15) * 0.2618) + r * 0.3) | round(1) }}'
+    unit_of_measurement: °C
+    device_class: temperature
+    state_class: measurement
+  - name: Comercio Personas en el Local
+    unique_id: demo_co_personas
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(0, 6 + 9 * cos((h - 18) * 0.2618) + r * 0.9)) | round(0) }}'
+    unit_of_measurement: personas
+    state_class: measurement
+    icon: mdi:account-group
+  - name: Comercio Clientes Hoy
+    unique_id: demo_co_clientes
+    state: '{% set h = now().hour + now().minute / 60 %}{{ ((7 * h + 6 * (sin((h - 17) * 0.2618) - sin(-17 * 0.2618)) / 0.2618) * 1) | round(0) }}'
+    unit_of_measurement: clientes
+    state_class: total_increasing
+    icon: mdi:account-multiple-check
+  - name: Comercio Ventas Hoy
+    unique_id: demo_co_ventas
+    state: '{% set h = now().hour + now().minute / 60 %}{{ ((3400 * h + 2600 * (sin((h - 17) * 0.2618) - sin(-17 * 0.2618)) / 0.2618) * 1) | round(0) }}'
+    unit_of_measurement: $
+    state_class: total_increasing
+    icon: mdi:cash-register
+  - name: Comercio Ticket Promedio
+    unique_id: demo_co_ticket
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (12400 + 1800 * cos((h - 18) * 0.2618) + r * 220) | round(0) }}'
+    unit_of_measurement: $
+    state_class: measurement
+    icon: mdi:receipt-text
+  - name: Comercio Wi-Fi Clientes Conectados
+    unique_id: demo_co_wifi
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(0, 7 + 9 * cos((h - 18) * 0.2618) + r * 0.9)) | round(0) }}'
+    unit_of_measurement: dispositivos
+    state_class: measurement
+    icon: mdi:wifi
+  - name: Comercio Luminosidad Vidriera
+    unique_id: demo_co_lux
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{{ (max(0, 420 + 380 * cos((h - 13) * 0.2618) + r * 22)) | round(0) }}'
+    unit_of_measurement: lx
+    device_class: illuminance
+    state_class: measurement
+  - name: Comercio Consumo Eléctrico
+    unique_id: demo_co_potencia
+    state: '{% set h = now().hour + now().minute / 60 %}{% set r = ((now().minute * 7 + now().hour * 3) % 7 - 3) / 3 %}{% set luces = [''light.comercio_luz_vidriera'', ''light.comercio_luz_salon'', ''light.comercio_luz_gondolas'', ''light.comercio_luz_deposito'', ''light.comercio_luz_cartel_led''] %}{{ (2600 + 1300 * cos((h - 17) * 0.2618) + r * 70 + (luces | select(''is_state'', ''on'') | list | count) * 80 + (1100 if is_state(''switch.comercio_aa_salon_compresor'', ''on'') else 0)) | round(0) }}'
+    unit_of_measurement: W
+    device_class: power
+    state_class: measurement
+  - name: Comercio Energía Hoy
+    unique_id: demo_co_energia
+    state: '{% set h = now().hour + now().minute / 60 %}{{ ((2600 * h + 1300 * (sin((h - 17) * 0.2618) - sin(-17 * 0.2618)) / 0.2618) * 0.001) | round(2) }}'
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+  - name: Comercio Impresora Fiscal Papel
+    unique_id: demo_co_papel
+    state: '{{ (58 - ((now().timetuple().tm_yday * 3) % 70) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    state_class: measurement
+    icon: mdi:receipt
+  - name: Comercio Batería Sensor Heladera 1
+    unique_id: demo_co_bat_h1
+    state: '{{ (77 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+  - name: Comercio Batería Sensor Freezer
+    unique_id: demo_co_bat_frz
+    state: '{{ (63 - ((now().timetuple().tm_yday * 3) % 120) / 10) | round(0) }}'
+    unit_of_measurement: '%'
+    device_class: battery
+    state_class: measurement
+- binary_sensor:
+  - name: Comercio Puerta de Ingreso
+    unique_id: demo_co_puerta
+    device_class: door
+    state: '{{ 9 <= now().hour < 21 and now().minute % 5 < 1 }}'
+  - name: Comercio Puerta Depósito
+    unique_id: demo_co_puerta_dep
+    device_class: door
+    state: '{{ false }}'
+  - name: Comercio Movimiento Salón
+    unique_id: demo_co_mov
+    device_class: motion
+    state: '{{ 9 <= now().hour < 21 and now().minute % 4 < 2 }}'
+  - name: Comercio Movimiento Depósito
+    unique_id: demo_co_mov_dep
+    device_class: motion
+    state: '{{ now().minute % 23 < 1 }}'
+  - name: Comercio Puerta Heladera 1
+    unique_id: demo_co_hel_puerta
+    device_class: door
+    state: '{{ now().minute % 19 < 1 }}'
+  - name: Comercio Caja Abierta
+    unique_id: demo_co_caja
+    device_class: opening
+    state: '{{ 9 <= now().hour < 21 and now().minute % 6 < 1 }}'
+  - name: Comercio Terminal de Cobro Conectado
+    unique_id: demo_co_pos
+    device_class: connectivity
+    state: '{{ true }}'
+  - name: Comercio Internet Conectado
+    unique_id: demo_co_internet
+    device_class: connectivity
+    state: '{{ true }}'
+  - name: Comercio Humo
+    unique_id: demo_co_humo
+    device_class: smoke
+    state: '{{ false }}'
+- light:
+  - name: Comercio Luz Vidriera
+    unique_id: demo_co_luz_vid
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:storefront-outline
+  - name: Comercio Luz Salón
+    unique_id: demo_co_luz_sal
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:ceiling-light
+  - name: Comercio Luz Góndolas
+    unique_id: demo_co_luz_gon
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:shelf
+  - name: Comercio Luz Depósito
+    unique_id: demo_co_luz_dep
+    turn_on: []
+    turn_off: []
+    set_level: []
+    icon: mdi:warehouse
+  - name: Comercio Luz Cartel LED
+    unique_id: demo_co_luz_cartel
+    turn_on: []
+    turn_off: []
+    icon: mdi:sign-real-estate
+- switch:
+  - name: Comercio Música Ambiente
+    unique_id: demo_co_musica
+    turn_on: []
+    turn_off: []
+    icon: mdi:speaker
+  - name: Comercio Cartel Abierto
+    unique_id: demo_co_abierto
+    turn_on: []
+    turn_off: []
+    icon: mdi:store-clock
+  - name: Comercio Cartelería Promociones
+    unique_id: demo_co_promos
+    turn_on: []
+    turn_off: []
+    icon: mdi:monitor-shimmer
+  - name: Comercio Máquina de Café
+    unique_id: demo_co_cafe
+    turn_on: []
+    turn_off: []
+    icon: mdi:coffee-maker
+  - name: Comercio AA Salón Compresor
+    unique_id: demo_co_aa_comp
+    turn_on: []
+    turn_off: []
+    icon: mdi:air-conditioner
+- cover:
+  - name: Comercio Cortina Metálica
+    unique_id: demo_co_cortina
+    device_class: shutter
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:window-shutter
+  - name: Comercio Toldo
+    unique_id: demo_co_toldo
+    device_class: awning
+    open_cover: []
+    close_cover: []
+    stop_cover: []
+    set_cover_position: []
+    icon: mdi:awning-outline
+- lock:
+  - name: Comercio Cerradura Depósito
+    unique_id: demo_co_cerr
+    state: '{{ is_state(''input_boolean.demo_comercio_cerradura_dep'', ''on'') | iif(''locked'', ''unlocked'') }}'
+    lock:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_comercio_cerradura_dep
+    unlock:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.demo_comercio_cerradura_dep
+climate:
+- platform: generic_thermostat
+  name: Comercio AA Salón
+  unique_id: demo_co_aa
+  heater: switch.comercio_aa_salon_compresor
+  target_sensor: sensor.comercio_temperatura_salon
+  ac_mode: true
+  min_temp: 16
+  max_temp: 30
+  target_temp: 24
+  precision: 0.5
+  target_temp_step: 0.5
+  initial_hvac_mode: cool
+  cold_tolerance: 0.5
+  hot_tolerance: 0.5
+alarm_control_panel:
+- platform: manual
+  name: Comercio Alarma
+  unique_id: demo_co_alarma
+  code_arm_required: false
+  arming_time: 5
+  delay_time: 5
+  trigger_time: 30
+script:
+  demo_comercio_abrir:
+    alias: Abrir el local
+    icon: mdi:store-check
+    sequence:
+    - action: alarm_control_panel.alarm_disarm
+      target:
+        entity_id: alarm_control_panel.comercio_alarma
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.demo_comercio_cerradura_dep
+    - action: cover.open_cover
+      target:
+        entity_id: cover.comercio_cortina_metalica
+    - action: light.turn_on
+      target:
+        entity_id:
+        - light.comercio_luz_vidriera
+        - light.comercio_luz_salon
+        - light.comercio_luz_gondolas
+        - light.comercio_luz_deposito
+        - light.comercio_luz_cartel_led
+      data:
+        brightness_pct: 90
+    - action: switch.turn_on
+      target:
+        entity_id:
+        - switch.comercio_musica_ambiente
+        - switch.comercio_cartel_abierto
+        - switch.comercio_carteleria_promociones
+        - switch.comercio_maquina_de_cafe
+    - action: climate.turn_on
+      target:
+        entity_id: climate.comercio_aa_salon
+  demo_comercio_cerrar:
+    alias: Cerrar el local
+    icon: mdi:store-remove
+    sequence:
+    - action: light.turn_off
+      target:
+        entity_id:
+        - light.comercio_luz_salon
+        - light.comercio_luz_gondolas
+        - light.comercio_luz_deposito
+    - action: light.turn_on
+      target:
+        entity_id: light.comercio_luz_vidriera
+      data:
+        brightness_pct: 30
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.comercio_musica_ambiente
+        - switch.comercio_cartel_abierto
+        - switch.comercio_carteleria_promociones
+        - switch.comercio_maquina_de_cafe
+    - action: cover.close_cover
+      target:
+        entity_id: cover.comercio_cortina_metalica
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.demo_comercio_cerradura_dep
+    - action: alarm_control_panel.alarm_arm_away
+      target:
+        entity_id: alarm_control_panel.comercio_alarma
+  demo_comercio_promo:
+    alias: Promoción en vidriera
+    icon: mdi:sale
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id:
+        - light.comercio_luz_vidriera
+        - light.comercio_luz_cartel_led
+      data:
+        brightness_pct: 100
+    - action: switch.turn_on
+      target:
+        entity_id:
+        - switch.comercio_carteleria_promociones
+        - switch.comercio_musica_ambiente
+  demo_comercio_limpieza:
+    alias: Modo limpieza
+    icon: mdi:broom
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id:
+        - light.comercio_luz_salon
+        - light.comercio_luz_gondolas
+        - light.comercio_luz_deposito
+      data:
+        brightness_pct: 100
+    - action: switch.turn_off
+      target:
+        entity_id:
+        - switch.comercio_musica_ambiente
+        - switch.comercio_carteleria_promociones
+  demo_comercio_inicializar:
+    alias: Demo · Estado inicial del comercio
+    icon: mdi:restart
+    sequence:
+    - action: light.turn_on
+      target:
+        entity_id: light.comercio_luz_vidriera
+      data:
+        brightness_pct: 100
+    - action: light.turn_on
+      target:
+        entity_id: light.comercio_luz_salon
+      data:
+        brightness_pct: 90
+    - action: light.turn_on
+      target:
+        entity_id: light.comercio_luz_gondolas
+      data:
+        brightness_pct: 80
+    - action: light.turn_off
+      target:
+        entity_id: light.comercio_luz_deposito
+    - action: light.turn_on
+      target:
+        entity_id: light.comercio_luz_cartel_led
+    - action: cover.set_cover_position
+      target:
+        entity_id: cover.comercio_cortina_metalica
+      data:
+        position: 100
+    - action: cover.set_cover_position
+      target:
+        entity_id: cover.comercio_toldo
+      data:
+        position: 60
+    - action: switch.turn_on
+      target:
+        entity_id:
+        - switch.comercio_musica_ambiente
+        - switch.comercio_cartel_abierto
+        - switch.comercio_carteleria_promociones
+    - action: switch.turn_off
+      target:
+        entity_id: switch.comercio_maquina_de_cafe
+    - action: climate.set_temperature
+      target:
+        entity_id: climate.comercio_aa_salon
+      data:
+        temperature: 24
+        hvac_mode: cool
+automation:
+- id: demo_comercio_arranque
+  alias: Demo · Dejar el comercio en su estado inicial (una sola vez)
+  mode: single
+  triggers:
+  - trigger: homeassistant
+    event: start
+  conditions:
+  - condition: state
+    entity_id: input_boolean.demo_comercio_inicializado
+    state: 'off'
+  actions:
+  - delay:
+      seconds: 60
+  - action: script.demo_comercio_inicializar
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.demo_comercio_inicializado
