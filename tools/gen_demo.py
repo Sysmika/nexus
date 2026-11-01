@@ -188,7 +188,6 @@ def guardar_dashboard(rubro, vistas):
     texto = ("# Dashboard demo \"%s\" — GENERADO por tools/gen_demo.py (no editar a mano: se pisa en cada actualización).\n"
              % rubro)
     texto += volcar({"title": "Nexus", "views": vistas})
-    texto += "- !include views/soporte.yaml\n"
     ruta = os.path.join(RAIZ, "dashboards", rubro + ".yaml")
     os.makedirs(os.path.dirname(ruta), exist_ok=True)
     with open(ruta, "w", encoding="utf-8", newline="\n") as f:

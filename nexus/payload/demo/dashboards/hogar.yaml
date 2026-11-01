@@ -411,4 +411,3 @@ views:
         - lock.hogar_cerradura_puerta
         - alarm_control_panel.hogar_alarma
         - cover.hogar_porton_garage
-- !include views/soporte.yaml

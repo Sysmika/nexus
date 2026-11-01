@@ -1,0 +1,11 @@
+{
+  "domain": "nexus_demo",
+  "name": "Nexus demo (restricciones)",
+  "version": "1.0.0",
+  "documentation": "https://github.com/Sysmika/nexus",
+  "dependencies": ["websocket_api"],
+  "after_dependencies": ["lovelace", "auth"],
+  "codeowners": [],
+  "requirements": [],
+  "iot_class": "calculated"
+}

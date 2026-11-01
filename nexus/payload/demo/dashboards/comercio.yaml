@@ -468,4 +468,3 @@ views:
         - lock.comercio_cerradura_deposito
         - alarm_control_panel.comercio_alarma
         - cover.comercio_cortina_metalica
-- !include views/soporte.yaml

@@ -41,11 +41,14 @@ def copiar_contenido(man):
             if I._copiar_si_cambia(os.path.join(carpeta, n), os.path.join(I.CONFIG, sub, n)):
                 cambio = True
                 I.ok("%s/%s" % (sub, n))
-    # el dashboard de cada rubro incluye la vista de Soporte
-    soporte = os.path.join(I.CONFIG, "dashboards", "views", "soporte.yaml")
-    if not os.path.exists(soporte):
-        I._copiar_si_cambia(os.path.join(I.PAYLOAD, "config/dashboards/views/soporte.yaml"), soporte)
-        cambio = True
+    # componente de restricciones para los usuarios demo (sin cambiar contraseña, sin servicios de sistema...)
+    comp = os.path.join(DEMO, "custom_components", "nexus_demo")
+    for n in sorted(os.listdir(comp)) if os.path.isdir(comp) else []:
+        if not os.path.isfile(os.path.join(comp, n)):
+            continue  # __pycache__ y similares
+        if I._copiar_si_cambia(os.path.join(comp, n), os.path.join(I.CONFIG, "custom_components", "nexus_demo", n)):
+            cambio = True
+            I.ok("custom_components/nexus_demo/%s" % n)
     # quién ve qué (solo con los rubros que existen)
     entornos = {"usuarios": {u: man["rubros"][r]["dashboard"]["url_path"]
                              for u, r in man.get("usuarios", {}).items() if r in man["rubros"]}}
@@ -58,7 +61,48 @@ def copiar_contenido(man):
         I.ok("www/nexus/entornos.json")
     if parchear_dashboards(man):
         cambio = True
+    if desactivar_tickets():
+        cambio = True
+    if activar_restricciones():
+        cambio = True
     return cambio
+
+
+SIN_ENVIO = "http://127.0.0.1:9/demo-sin-envio"
+
+
+def desactivar_tickets():
+    """En el modo demo los tickets de Soporte no deben llegar a Orion (cualquier usuario demo podría dispararlos):
+    el rest_command apunta a una dirección que no responde. Idempotente."""
+    ruta = os.path.join(I.CONFIG, "packages", "orion_soporte.yaml")
+    if not os.path.exists(ruta):
+        return False
+    texto = I.leer(ruta)
+    nuevo = re.sub(r"https?://[^\s\"']+/api/tickets/notify\.php", SIN_ENVIO, texto)
+    if nuevo == texto:
+        return False
+    copia = ruta + ".bak-demo-" + I.SELLO
+    if not os.path.exists(copia):
+        import shutil
+        shutil.copy2(ruta, copia)
+    I.escribir(ruta, nuevo)
+    I.ok("Tickets de Soporte desactivados en el modo demo (no se envía nada a Orion)")
+    return True
+
+
+def activar_restricciones():
+    """Agrega la línea `nexus_demo:` a configuration.yaml (con copia de seguridad). Idempotente."""
+    cfg = os.path.join(I.CONFIG, "configuration.yaml")
+    texto = I.leer(cfg)
+    if re.search(r"(?m)^nexus_demo:", texto):
+        return False
+    import shutil
+    copia = cfg + ".bak-demo-" + I.SELLO
+    if not os.path.exists(copia):
+        shutil.copy2(cfg, copia)
+    I.escribir(cfg, texto.rstrip("\n") + "\n\n# Restricciones de los usuarios de demostración (custom_components/nexus_demo)\nnexus_demo:\n")
+    I.ok("configuration.yaml: nexus_demo (restricciones de los usuarios demo)")
+    return True
 
 
 def parchear_dashboards(man):

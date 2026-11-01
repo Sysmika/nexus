@@ -481,4 +481,3 @@ views:
         - lock.oficina_cerradura_sala_de_servidores
         - alarm_control_panel.oficina_alarma
         - binary_sensor.oficina_sala_de_reuniones_ocupada
-- !include views/soporte.yaml
