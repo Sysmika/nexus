@@ -125,8 +125,11 @@
         : a.dataset.panel || new URL(a.getAttribute('href'), location.origin).pathname.split('/')[1];
       if (panel === 'profile') return;
       const info = hass.panels?.[panel];
+      // usuario de demo: ve los paneles generales y solo su dashboard (no los de los otros entornos ni el de Nexus)
+      const ajeno = info?.component_name === 'lovelace' && panel !== ent
+        && panel !== 'lovelace' && (panel === 'dashboard-nexus' || Object.values(entornos?.usuarios || {}).includes(panel));
       const visible = ent
-        ? panel === ent
+        ? !ajeno
         : (info && info.component_name === 'lovelace') || CFG.panelesExtra.includes(panel);
       const oculto = a.style.display === 'none';
       if (!visible && !oculto) a.style.display = 'none';

@@ -389,7 +389,7 @@ def asegurar_marca():
                     cambio = True
     cfg = os.path.join(CONFIG, "configuration.yaml")
     js = os.path.join(PAYLOAD, "www/nexus/nexus-branding.js")
-    if cambio and os.path.exists(cfg) and os.path.exists(js):
+    if os.path.exists(cfg) and os.path.exists(js):
         with open(js, "rb") as f:
             ver = hashlib.sha1(f.read()).hexdigest()[:8]
         texto = leer(cfg)
