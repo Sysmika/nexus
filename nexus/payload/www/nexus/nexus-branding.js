@@ -98,7 +98,7 @@
     redirigido = true; // una sola vez por carga: después puede moverse libremente
     const p = location.pathname;
     if (p.startsWith('/' + ent)) return;
-    if (p === '/' || p.startsWith('/lovelace') || p.startsWith('/dashboard-')) {
+    if (p === '/' || p.startsWith('/home') || p.startsWith('/lovelace') || p.startsWith('/dashboard-')) {
       history.replaceState(null, '', '/' + ent);
       window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: true } }));
     }
@@ -119,8 +119,11 @@
     const hass = ha()?.hass;
     if (!CFG.simplificarParaClientes || !hass?.user || hass.user.is_admin) return;
     const ent = miEntorno();
-    root.querySelectorAll('a[href]').forEach((a) => {
-      const panel = a.dataset.panel || new URL(a.href, location.origin).pathname.split('/')[1];
+    // (según la versión de HA los ítems son <a> o <ha-list-item-button>)
+    root.querySelectorAll('a[href], ha-list-item-button[id^="sidebar-panel-"]').forEach((a) => {
+      const panel = a.id?.startsWith('sidebar-panel-') ? a.id.slice(14)
+        : a.dataset.panel || new URL(a.getAttribute('href'), location.origin).pathname.split('/')[1];
+      if (panel === 'profile') return;
       const info = hass.panels?.[panel];
       const visible = ent
         ? panel === ent
