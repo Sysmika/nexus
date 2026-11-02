@@ -21,6 +21,7 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import Context, HomeAssistant, callback
 from homeassistant.exceptions import Unauthorized
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.util import dt as dt_util
 
 DOMAIN = "nexus_demo"
 _LOGGER = logging.getLogger(__name__)
@@ -92,6 +93,35 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             clase._nexus_demo_parche = True
     except Exception:  # noqa: BLE001
         _LOGGER.exception("nexus_demo: no pude proteger los servicios")
+
+    # --- ingresos: evento nexus_demo_ingreso por cada inicio de sesión de un usuario demo (lo toma demo_ingresos.yaml) ---
+    try:
+        clase_auth = type(hass.auth)
+        if not getattr(clase_auth, "_nexus_demo_parche", False):
+            crear_original = clase_auth.async_create_refresh_token
+
+            def avisar_ingreso(token, user) -> None:
+                # la IP se completa un instante después de crear la sesión (al emitir el primer access token)
+                hass.bus.async_fire("nexus_demo_ingreso", {
+                    "usuario": user.name.lower(),
+                    "ip": token.last_used_ip or "",
+                    "entorno": estado["usuarios"].get(user.name.lower(), ""),
+                    "cuando": dt_util.now().isoformat(),
+                })
+
+            async def crear_con_aviso(self, user, *args, **kwargs):
+                token = await crear_original(self, user, *args, **kwargs)
+                try:
+                    if token.token_type == "normal" and _dashboard_del_usuario(estado["usuarios"], user) is not None:
+                        hass.loop.call_later(3, avisar_ingreso, token, user)
+                except Exception:  # noqa: BLE001
+                    _LOGGER.exception("nexus_demo: no pude avisar el ingreso")
+                return token
+
+            clase_auth.async_create_refresh_token = crear_con_aviso
+            clase_auth._nexus_demo_parche = True
+    except Exception:  # noqa: BLE001
+        _LOGGER.exception("nexus_demo: no pude registrar los ingresos")
 
     # --- websocket: comandos de autenticación y dashboards ajenos ---
     async def proteger_websocket(_evento=None) -> None:

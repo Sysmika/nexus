@@ -1,0 +1,37 @@
+# =====================================================================
+#  NEXUS DEMO · AVISO POR EMAIL DE CADA INGRESO
+#
+#  El componente nexus_demo dispara el evento nexus_demo_ingreso cada vez que un usuario de demostración
+#  inicia sesión. Acá se lo informa a Orion, que manda un email a los administradores (usuario, entorno,
+#  fecha y hora, IP). Usa la misma API key de Soporte (secrets.yaml: orion_tickets_api_key).
+# =====================================================================
+
+rest_command:
+  orion_ingreso:
+    url: "https://smk.sysmika.org/api/tickets/ha/ingreso.php"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+      X-API-Key: !secret orion_tickets_api_key
+    payload: >-
+      {{ {'usuario': usuario, 'ip': ip, 'cuando': cuando, 'entorno': entorno} | tojson }}
+    content_type: "application/json; charset=utf-8"
+    timeout: 20
+
+automation:
+  - id: nexus_demo_aviso_ingreso
+    alias: Demo - Avisar por email cada ingreso
+    description: Informa a Orion cada inicio de sesión de un usuario de demostración.
+    mode: queued
+    max: 10
+    triggers:
+      - trigger: event
+        event_type: nexus_demo_ingreso
+    actions:
+      - action: rest_command.orion_ingreso
+        data:
+          usuario: "{{ trigger.event.data.usuario }}"
+          ip: "{{ trigger.event.data.ip }}"
+          cuando: "{{ trigger.event.data.cuando }}"
+          entorno: "{{ trigger.event.data.entorno }}"
+        continue_on_error: true
