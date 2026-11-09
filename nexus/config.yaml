@@ -1,5 +1,5 @@
 name: Nexus by Orion
-version: "1.6.4"
+version: "1.6.5"
 slug: nexus_installer
 description: Instala la marca Nexus, el módulo de Soporte con tickets en Orion y el dashboard en este Home Assistant.
 url: https://orion.com.ar/domotica
@@ -32,6 +32,7 @@ options:
   webhook_id: ""
   modo_demo: false
   demo_clave: ""
+  replicator: true
 schema:
   codigo: str?
   url_publica: str?
@@ -42,3 +43,4 @@ schema:
   webhook_id: str?
   modo_demo: bool?
   demo_clave: password?
+  replicator: bool?
