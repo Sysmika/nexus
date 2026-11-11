@@ -7,14 +7,13 @@ Dos pasos, independientes:
      por equipo; si después alguien quita el repositorio, no se vuelve a agregar. Se desactiva con
      `sysgestion: false`.
   2. Activación: solo si se carga la opción `sysgestion_url` (la dirección del sistema de gestión del
-     cliente). Ahí instala Orion SysGestion, le carga esa dirección y la API key de esta instalación
-     (la misma de Soporte, de secrets.yaml) y lo inicia. Si después cambia la dirección o la API key,
+     cliente) y `sysgestion_api_key` (la API key de Gestión de la instalación, que se genera en Orion AR).
+     Ahí instala Orion SysGestion, le carga esa dirección y esa key y lo inicia. Si después cambia la dirección o la API key,
      actualiza la configuración y lo reinicia. Si el cliente lo desinstala, no se vuelve a instalar.
 Corre aparte (en segundo plano), porque la primera instalación construye la imagen y puede tardar.
 """
 import json
 import os
-import re
 import sys
 import time
 import urllib.error
@@ -52,16 +51,10 @@ def buscar_addon(repo_slug):
     return None
 
 
-def api_key_instalacion(o):
-    """La API key de Nexus de esta instalación: la de Soporte en secrets.yaml, o la opción api_key."""
-    try:
-        texto = I.leer(os.path.join(I.CONFIG, "secrets.yaml"))
-        m = re.search(r"(?m)^orion_tickets_api_key:[ \t]*(.*)$", texto)
-        if m and m.group(1).strip().strip("\"'"):
-            return m.group(1).strip().strip("\"'")
-    except Exception:  # noqa: BLE001
-        pass
-    return (o.get("api_key") or "").strip()
+def api_key_gestion(o):
+    """La API key de Gestión de esta instalación (Orion AR → ficha de la instalación → Orion Gestión → Rotar API key).
+    Es distinta de la de Soporte: se carga en la opción `sysgestion_api_key`."""
+    return (o.get("sysgestion_api_key") or "").strip()
 
 
 def leer_marca(ruta):
@@ -112,9 +105,9 @@ def paso(o):
     if not url.startswith("https://"):
         I.aviso("sysgestion_url tiene que empezar con https:// (no se activó Orion SysGestion)")
         return
-    api_key = api_key_instalacion(o)
+    api_key = api_key_gestion(o)
     if not api_key:
-        I.aviso("Orion SysGestion: falta la API key de la instalación (se activa cuando esté instalado Soporte)")
+        I.aviso("Orion SysGestion: falta sysgestion_api_key (Orion AR → ficha de la instalación → Orion Gestión → Rotar API key)")
         return
     repo_slug = repo_slug or slug_repositorio(agregar=True)
     addon = buscar_addon(repo_slug)

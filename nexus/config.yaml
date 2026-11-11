@@ -35,6 +35,7 @@ options:
   replicator: true
   sysgestion: true
   sysgestion_url: ""
+  sysgestion_api_key: ""
 schema:
   codigo: str?
   url_publica: str?
@@ -48,3 +49,4 @@ schema:
   replicator: bool?
   sysgestion: bool?
   sysgestion_url: str?
+  sysgestion_api_key: password?
