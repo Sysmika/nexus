@@ -146,7 +146,14 @@
       const ajeno = info?.component_name === 'lovelace' && panel !== ent
         && panel !== 'lovelace' && (panel === 'dashboard-nexus' || Object.values(entornos?.usuarios || {}).includes(panel));
       // usuario de demo: de los add-ons por rubro solo ve el suyo (Hogar: Replicator; Oficina y Comercio: SysGestion)
-      const addon = addonDelPanel(panel, info, entornos?.gestionados || []);
+      // (en HA 2026 el ítem de un add-on apunta a /app/<repo>_<slug>: se miran todos los tramos de la dirección y,
+      // si no alcanza, el texto del ítem)
+      const gest = entornos?.gestionados || [];
+      const href = a.getAttribute('href');
+      const tramos = href ? new URL(href, location.origin).pathname.split('/').filter(Boolean) : [];
+      const porTexto = TITULOS_ADDON[(a.textContent || '').trim().toLowerCase()];
+      const addon = [panel, ...tramos].map((k) => addonDelPanel(k, hass.panels?.[k], gest)).find(Boolean)
+        || (porTexto && gest.includes(porTexto) ? porTexto : null);
       const addonAjeno = !!addon && !misAddons().includes(addon);
       const visible = ent
         ? !ajeno && !addonAjeno
