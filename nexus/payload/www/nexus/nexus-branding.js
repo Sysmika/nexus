@@ -85,8 +85,19 @@
     .then((r) => (r.ok ? r.json() : null))
     .then((j) => { entornos = j; })
     .catch(() => {});
-  // panel de un add-on (ingress: <repo>_<slug> o local_<slug>) -> slug base de la lista, o null
-  const addonDelPanel = (panel, lista) => lista.find((b) => panel === b || panel.endsWith('_' + b)) || null;
+  // panel de un add-on (ingress) -> slug base de la lista, o null. Se mira la clave del panel y el slug de ingress de
+  // su configuración (<repo>_<slug>, local_<slug>, o con prefijo de ruta según la versión de HA), y como último
+  // recurso el título del panel (Replicator / SysGestion).
+  const TITULOS_ADDON = { replicator: 'replicator', sysgestion: 'orion_sysgestion' };
+  const addonDelPanel = (panel, info, lista) => {
+    const cfg = info?.config || {};
+    const nombres = [panel, info?.url_path, cfg.ingress, cfg.addon, cfg._panel_custom?.config?.ingress]
+      .filter((x) => typeof x === 'string' && x).map((x) => x.toLowerCase());
+    const porSlug = lista.find((b) => nombres.some((n) => n === b || n.endsWith('_' + b) || n.endsWith('/' + b)));
+    if (porSlug) return porSlug;
+    const t = TITULOS_ADDON[(info?.title || '').trim().toLowerCase()];
+    return t && lista.includes(t) ? t : null;
+  };
   const misAddons = () => {
     const n = ha()?.hass?.user?.name;
     return (n && entornos?.addons?.[n.toLowerCase()]) || [];
@@ -135,7 +146,7 @@
       const ajeno = info?.component_name === 'lovelace' && panel !== ent
         && panel !== 'lovelace' && (panel === 'dashboard-nexus' || Object.values(entornos?.usuarios || {}).includes(panel));
       // usuario de demo: de los add-ons por rubro solo ve el suyo (Hogar: Replicator; Oficina y Comercio: SysGestion)
-      const addon = addonDelPanel(panel, entornos?.gestionados || []);
+      const addon = addonDelPanel(panel, info, entornos?.gestionados || []);
       const addonAjeno = !!addon && !misAddons().includes(addon);
       const visible = ent
         ? !ajeno && !addonAjeno
