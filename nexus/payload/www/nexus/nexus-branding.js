@@ -2,7 +2,7 @@
 // Se carga con `frontend: extra_module_url` (/local/nexus/nexus-branding.js) y cambia solo lo que ve el usuario:
 //   · título del sidebar y de la pestaña del navegador
 //   · íconos (favicon, ícono de iOS) y manifest de la PWA: la app se instala como "Nexus"
-//   · para usuarios NO administradores, oculta del sidebar todo lo que no sea un dashboard
+//   · para usuarios NO administradores, oculta del sidebar todo lo que no sea un dashboard o el add-on de su rubro
 // No modifica Home Assistant ni su licencia: es una capa visual.
 (() => {
   if (window.__nexusBranding) return;
@@ -17,6 +17,9 @@
     manifest: BASE + 'manifest.webmanifest',
     // Paneles que ve un usuario no administrador además de los dashboards (url_path)
     panelesExtra: [],
+    // Add-ons de Orion que ve un cliente no administrador (slug base; el panel es <repo>_<slug> o local_<slug>).
+    // Se instala solo el que corresponde al rubro (Hogar: Replicator; Comercio y Oficina: SysGestion).
+    addonsCliente: ['replicator', 'orion_sysgestion'],
     // true: oculta el sidebar "de sistema" a los no administradores (es solo visual, no es seguridad)
     simplificarParaClientes: true,
   };
@@ -85,6 +88,12 @@
     .then((r) => (r.ok ? r.json() : null))
     .then((j) => { entornos = j; })
     .catch(() => {});
+  // panel de un add-on (ingress) -> slug base de la lista, o null
+  const addonDelPanel = (panel, lista) => lista.find((b) => panel === b || panel.endsWith('_' + b)) || null;
+  const misAddons = () => {
+    const n = ha()?.hass?.user?.name;
+    return (n && entornos?.addons?.[n.toLowerCase()]) || [];
+  };
   const miEntorno = () => {
     const hass = ha()?.hass;
     const n = hass?.user?.name;
@@ -128,9 +137,13 @@
       // usuario de demo: ve los paneles generales y solo su dashboard (no los de los otros entornos ni el de Nexus)
       const ajeno = info?.component_name === 'lovelace' && panel !== ent
         && panel !== 'lovelace' && (panel === 'dashboard-nexus' || Object.values(entornos?.usuarios || {}).includes(panel));
+      // usuario de demo: de los add-ons por rubro solo ve el suyo (Hogar: Replicator; Oficina y Comercio: SysGestion)
+      const addon = addonDelPanel(panel, entornos?.gestionados || []);
+      const addonAjeno = !!addon && !misAddons().includes(addon);
       const visible = ent
-        ? !ajeno
-        : (info && info.component_name === 'lovelace') || CFG.panelesExtra.includes(panel);
+        ? !ajeno && !addonAjeno
+        : (info && info.component_name === 'lovelace') || CFG.panelesExtra.includes(panel)
+          || !!addonDelPanel(panel, CFG.addonsCliente);
       const oculto = a.style.display === 'none';
       if (!visible && !oculto) a.style.display = 'none';
       if (visible && oculto) a.style.display = '';

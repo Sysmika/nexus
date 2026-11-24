@@ -6,7 +6,8 @@ instalados en clientes reales). Deja el Home Assistant "completo" sin ningún di
   · entidades ficticias por rubro (packages/demo_<rubro>.yaml: sensores que varían con la hora, luces, persianas,
     aire acondicionado, alarma...) y un dashboard por rubro (dashboards/<rubro>.yaml)
   · usuarios de demostración sin permisos de administrador (uno por rubro, ej. juan=Hogar) con la clave `demo_clave`
-  · www/nexus/entornos.json: de ahí nexus-branding.js sabe qué dashboard ve cada usuario (es visual, no seguridad)
+  · www/nexus/entornos.json: de ahí nexus-branding.js sabe qué dashboard y qué add-on (Replicator o SysGestion) ve
+    cada usuario (es visual, no seguridad)
   · la etiqueta "Orion Vigilar" en algunos sensores, para poder mostrar el aviso por email/WhatsApp
 Todo es idempotente. El contenido sale de payload/demo (lo genera tools/gen_demo.py).
 """
@@ -52,6 +53,11 @@ def copiar_contenido(man):
     # quién ve qué (solo con los rubros que existen)
     entornos = {"usuarios": {u: man["rubros"][r]["dashboard"]["url_path"]
                              for u, r in man.get("usuarios", {}).items() if r in man["rubros"]}}
+    # qué add-on ve cada usuario según su rubro (Hogar: Replicator; Oficina y Comercio: SysGestion)
+    addons = man.get("addons") or {}
+    if addons:
+        entornos["addons"] = {u: list(addons.get(r, [])) for u, r in man.get("usuarios", {}).items() if r in man["rubros"]}
+        entornos["gestionados"] = sorted({a for lista in addons.values() for a in lista})
     nuevo = json.dumps(entornos, ensure_ascii=False, indent=2).encode("utf-8")
     ruta = os.path.join(I.CONFIG, "www", "nexus", "entornos.json")
     if not os.path.exists(ruta) or open(ruta, "rb").read() != nuevo:

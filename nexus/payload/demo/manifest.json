@@ -535,5 +535,16 @@
     "juan": "hogar",
     "pedro": "oficina",
     "maria": "comercio"
+  },
+  "addons": {
+    "hogar": [
+      "replicator"
+    ],
+    "oficina": [
+      "orion_sysgestion"
+    ],
+    "comercio": [
+      "orion_sysgestion"
+    ]
   }
 }
