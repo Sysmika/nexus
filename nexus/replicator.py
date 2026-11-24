@@ -9,8 +9,6 @@ equipo y puede llevar varios minutos: así no demora el acceso remoto.
   · No carga ninguna clave de IA: la IA se da solo si el cliente la pide, y la clave se carga en el panel de
     Replicator.
   · Se desactiva con la opción `replicator: false`.
-  · Replicator es para Hogar: con `rubro: comercio` u `oficina` no se instala (esos rubros usan SysGestion).
-    En el modo demo se instala igual, porque el equipo demo tiene los tres rubros (lo ve solo el usuario de Hogar).
 """
 import json
 import os
@@ -23,7 +21,6 @@ import instalar as I
 
 REPO = os.environ.get("NEXUS_REPLICATOR_REPO", "https://github.com/Sysmika/replicator")
 SLUG_BASE = "replicator"  # slug del add-on dentro de su repositorio
-RUBROS_SIN_REPLICATOR = ("comercio", "oficina")  # estos rubros usan Orion SysGestion, no Replicator
 MARCA = os.path.join(os.path.dirname(I.OPTIONS), "nexus_replicator.json")  # /data, privado del add-on
 
 
@@ -83,10 +80,6 @@ def main():
     except Exception:  # noqa: BLE001
         o = {}
     if o.get("replicator") is False or os.path.exists(MARCA):
-        return
-    rubro = (o.get("rubro") or "").strip().lower()
-    if rubro in RUBROS_SIN_REPLICATOR and not o.get("modo_demo"):
-        I.info("Replicator no se instala: el rubro es %s (usa SysGestion)." % rubro)
         return
     I.titulo("Replicator (stock y compras)")
     for intento in range(3):
