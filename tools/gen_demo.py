@@ -1004,9 +1004,12 @@ def comercio():
 
 
 RUBROS = {"hogar": hogar, "oficina": oficina, "comercio": comercio}
+# Add-ons que ve cada rubro (slug base del add-on): Hogar usa Replicator; Oficina y Comercio usan SysGestion.
+ADDONS = {"hogar": ["replicator"], "oficina": ["orion_sysgestion"], "comercio": ["orion_sysgestion"]}
 
 if __name__ == "__main__":
-    manifiesto = {"rubros": {}, "usuarios": {"juan": "hogar", "pedro": "oficina", "maria": "comercio"}}
+    manifiesto = {"rubros": {}, "usuarios": {"juan": "hogar", "pedro": "oficina", "maria": "comercio"},
+                  "addons": ADDONS}
     for nombre, fn in RUBROS.items():
         manifiesto["rubros"][nombre] = fn()
     with open(os.path.join(RAIZ, "manifest.json"), "w", encoding="utf-8", newline="\n") as f:
